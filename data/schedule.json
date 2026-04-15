@@ -1,0 +1,236 @@
+[
+  {
+    "pvz_id": 1,
+    "weekday": 0,
+    "open_time": "09:00",
+    "close_time": "21:00"
+  },
+  {
+    "pvz_id": 1,
+    "weekday": 1,
+    "open_time": "09:00",
+    "close_time": "21:00"
+  },
+  {
+    "pvz_id": 1,
+    "weekday": 2,
+    "open_time": "09:00",
+    "close_time": "21:00"
+  },
+  {
+    "pvz_id": 1,
+    "weekday": 3,
+    "open_time": "09:00",
+    "close_time": "21:00"
+  },
+  {
+    "pvz_id": 1,
+    "weekday": 4,
+    "open_time": "09:00",
+    "close_time": "21:00"
+  },
+  {
+    "pvz_id": 1,
+    "weekday": 5,
+    "open_time": "10:00",
+    "close_time": "18:00"
+  },
+  {
+    "pvz_id": 1,
+    "weekday": 6,
+    "open_time": "10:00",
+    "close_time": "18:00"
+  },
+  {
+    "pvz_id": 2,
+    "weekday": 0,
+    "open_time": "09:00",
+    "close_time": "21:00"
+  },
+  {
+    "pvz_id": 2,
+    "weekday": 1,
+    "open_time": "09:00",
+    "close_time": "21:00"
+  },
+  {
+    "pvz_id": 2,
+    "weekday": 2,
+    "open_time": "09:00",
+    "close_time": "21:00"
+  },
+  {
+    "pvz_id": 2,
+    "weekday": 3,
+    "open_time": "09:00",
+    "close_time": "21:00"
+  },
+  {
+    "pvz_id": 2,
+    "weekday": 4,
+    "open_time": "09:00",
+    "close_time": "21:00"
+  },
+  {
+    "pvz_id": 2,
+    "weekday": 5,
+    "open_time": "10:00",
+    "close_time": "18:00"
+  },
+  {
+    "pvz_id": 3,
+    "weekday": 0,
+    "open_time": "09:00",
+    "close_time": "21:00"
+  },
+  {
+    "pvz_id": 3,
+    "weekday": 1,
+    "open_time": "09:00",
+    "close_time": "21:00"
+  },
+  {
+    "pvz_id": 3,
+    "weekday": 2,
+    "open_time": "09:00",
+    "close_time": "21:00"
+  },
+  {
+    "pvz_id": 3,
+    "weekday": 3,
+    "open_time": "09:00",
+    "close_time": "21:00"
+  },
+  {
+    "pvz_id": 3,
+    "weekday": 4,
+    "open_time": "09:00",
+    "close_time": "21:00"
+  },
+  {
+    "pvz_id": 3,
+    "weekday": 5,
+    "open_time": "10:00",
+    "close_time": "18:00"
+  },
+  {
+    "pvz_id": 3,
+    "weekday": 6,
+    "open_time": "10:00",
+    "close_time": "18:00"
+  },
+  {
+    "pvz_id": 4,
+    "weekday": 0,
+    "open_time": "09:00",
+    "close_time": "21:00"
+  },
+  {
+    "pvz_id": 4,
+    "weekday": 1,
+    "open_time": "09:00",
+    "close_time": "21:00"
+  },
+  {
+    "pvz_id": 4,
+    "weekday": 2,
+    "open_time": "09:00",
+    "close_time": "21:00"
+  },
+  {
+    "pvz_id": 4,
+    "weekday": 3,
+    "open_time": "09:00",
+    "close_time": "21:00"
+  },
+  {
+    "pvz_id": 4,
+    "weekday": 4,
+    "open_time": "09:00",
+    "close_time": "21:00"
+  },
+  {
+    "pvz_id": 4,
+    "weekday": 5,
+    "open_time": "10:00",
+    "close_time": "18:00"
+  },
+  {
+    "pvz_id": 5,
+    "weekday": 0,
+    "open_time": "09:00",
+    "close_time": "21:00"
+  },
+  {
+    "pvz_id": 5,
+    "weekday": 1,
+    "open_time": "09:00",
+    "close_time": "21:00"
+  },
+  {
+    "pvz_id": 5,
+    "weekday": 2,
+    "open_time": "09:00",
+    "close_time": "21:00"
+  },
+  {
+    "pvz_id": 5,
+    "weekday": 3,
+    "open_time": "09:00",
+    "close_time": "21:00"
+  },
+  {
+    "pvz_id": 5,
+    "weekday": 4,
+    "open_time": "09:00",
+    "close_time": "21:00"
+  },
+  {
+    "pvz_id": 5,
+    "weekday": 5,
+    "open_time": "10:00",
+    "close_time": "18:00"
+  },
+  {
+    "pvz_id": 5,
+    "weekday": 6,
+    "open_time": "10:00",
+    "close_time": "18:00"
+  },
+  {
+    "pvz_id": 6,
+    "weekday": 0,
+    "open_time": "09:00",
+    "close_time": "21:00"
+  },
+  {
+    "pvz_id": 6,
+    "weekday": 1,
+    "open_time": "09:00",
+    "close_time": "21:00"
+  },
+  {
+    "pvz_id": 6,
+    "weekday": 2,
+    "open_time": "09:00",
+    "close_time": "21:00"
+  },
+  {
+    "pvz_id": 6,
+    "weekday": 3,
+    "open_time": "09:00",
+    "close_time": "21:00"
+  },
+  {
+    "pvz_id": 6,
+    "weekday": 4,
+    "open_time": "09:00",
+    "close_time": "21:00"
+  },
+  {
+    "pvz_id": 6,
+    "weekday": 5,
+    "open_time": "10:00",
+    "close_time": "18:00"
+  }
+]

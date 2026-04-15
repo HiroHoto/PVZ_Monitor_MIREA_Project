@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ПВЗ Dashboard — Мониторинг загрузки</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.414.0/dist/umd/lucide.min.js"></script>
+<style>
+:root,[data-theme="light"]{
+  --color-bg:#f7f6f2;--color-surface:#f9f8f5;--color-surface-2:#fbfbf9;
+  --color-surface-offset:#f3f0ec;--color-surface-dynamic:#e6e4df;
+  --color-divider:#dcd9d5;--color-border:#d4d1ca;
+  --color-text:#28251d;--color-text-muted:#7a7974;--color-text-faint:#bab9b4;
+  --color-primary:#01696f;--color-primary-hover:#0c4e54;--color-primary-active:#0f3638;
+  --color-primary-highlight:#cedcd8;
+  --color-success:#437a22;--color-success-hover:#2e5c10;--color-success-highlight:#d4dfcc;
+  --color-warning:#964219;--color-warning-highlight:#ddcfc6;
+  --color-error:#a12c7b;--color-error-highlight:#e0ced7;
+  --color-notification:#a13544;
+  --color-orange:#da7101;--color-gold:#d19900;
+  --radius-sm:.375rem;--radius-md:.5rem;--radius-lg:.75rem;--radius-xl:1rem;--radius-full:9999px;
+  --shadow-sm:0 1px 2px rgba(40,37,29,.06);--shadow-md:0 4px 12px rgba(40,37,29,.08);
+  --shadow-lg:0 12px 32px rgba(40,37,29,.12);
+  --transition:180ms cubic-bezier(0.16,1,0.3,1);
+  --space-1:.25rem;--space-2:.5rem;--space-3:.75rem;--space-4:1rem;
+  --space-5:1.25rem;--space-6:1.5rem;--space-8:2rem;--space-10:2.5rem;--space-12:3rem;--space-16:4rem;
+  --text-xs:clamp(.75rem,.7rem + .25vw,.875rem);
+  --text-sm:clamp(.875rem,.8rem + .35vw,1rem);
+  --text-base:clamp(1rem,.95rem + .25vw,1.125rem);
+  --text-lg:clamp(1.125rem,1rem + .75vw,1.5rem);
+  --text-xl:clamp(1.5rem,1.2rem + 1.25vw,2.25rem);
+  --font-body:'Inter','Helvetica Neue',sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+  --sidebar-w:220px;--header-h:56px;
+}
+[data-theme="dark"]{
+  --color-bg:#171614;--color-surface:#1c1b19;--color-surface-2:#201f1d;
+  --color-surface-offset:#1d1c1a;--color-surface-dynamic:#2d2c2a;
+  --color-divider:#262523;--color-border:#393836;
+  --color-text:#cdccca;--color-text-muted:#797876;--color-text-faint:#5a5957;
+  --color-primary:#4f98a3;--color-primary-hover:#227f8b;--color-primary-active:#1a626b;
+  --color-primary-highlight:#313b3b;
+  --color-success:#6daa45;--color-success-hover:#4d8f25;--color-success-highlight:#3a4435;
+  --color-warning:#bb653b;--color-warning-highlight:#564942;
+  --color-error:#d163a7;--color-error-highlight:#4c3d46;
+  --color-notification:#dd6974;
+  --color-orange:#fdab43;--color-gold:#e8af34;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.2);--shadow-md:0 4px 12px rgba(0,0,0,.3);--shadow-lg:0 12px 32px rgba(0,0,0,.4);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;scroll-behavior:smooth}
+body{min-height:100dvh;font-family:var(--font-body);font-size:var(--text-base);color:var(--color-text);background:var(--color-bg);line-height:1.6}
+img,svg{display:block;max-width:100%}
+button{cursor:pointer;background:none;border:none;font:inherit;color:inherit}
+input,select,textarea{font:inherit;color:inherit}
+table{border-collapse:collapse;width:100%}
+:focus-visible{outline:2px solid var(--color-primary);outline-offset:3px;border-radius:var(--radius-sm)}
+a,button,[role="button"],input,select{transition:color var(--transition),background var(--transition),border-color var(--transition),box-shadow var(--transition)}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border-width:0}
+
+/* LOGIN */
+#login-screen{display:flex;align-items:center;justify-content:center;min-height:100dvh;background:var(--color-bg)}
+.login-card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-xl);padding:var(--space-10);width:min(420px,92vw);box-shadow:var(--shadow-lg)}
+.login-logo{display:flex;align-items:center;gap:var(--space-3);margin-bottom:var(--space-6)}
+.login-logo svg{color:var(--color-primary)}
+.login-logo span{font-size:var(--text-lg);font-weight:700;letter-spacing:-.02em}
+.login-subtitle{color:var(--color-text-muted);font-size:var(--text-sm);margin-bottom:var(--space-5)}
+.demo-table{background:var(--color-surface-offset);border-radius:var(--radius-md);padding:var(--space-3) var(--space-4);margin-bottom:var(--space-5);font-size:var(--text-xs);color:var(--color-text-muted)}
+.demo-table .dt-title{font-weight:600;color:var(--color-text);margin-bottom:var(--space-2)}
+.demo-row{display:flex;align-items:center;gap:var(--space-3);padding:2px 0;flex-wrap:wrap}
+.demo-cred{font-family:var(--font-mono);font-size:.7rem;background:var(--color-surface-dynamic);padding:1px 6px;border-radius:var(--radius-sm)}
+.role-badge{display:inline-block;font-size:.6rem;padding:1px 7px;border-radius:var(--radius-full);font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+.role-operator{background:var(--color-primary-highlight);color:var(--color-primary)}
+.role-supervisor{background:var(--color-warning-highlight);color:var(--color-warning)}
+.role-analyst{background:var(--color-success-highlight);color:var(--color-success)}
+.field-group{display:flex;flex-direction:column;gap:var(--space-2);margin-bottom:var(--space-4)}
+.field-group label{font-size:var(--text-sm);font-weight:500;color:var(--color-text-muted)}
+.field-group input{background:var(--color-bg);border:1px solid var(--color-border);border-radius:var(--radius-md);padding:var(--space-3) var(--space-4);font-size:var(--text-sm);width:100%}
+.field-group input:focus{border-color:var(--color-primary);outline:none;box-shadow:0 0 0 3px rgba(1,105,111,.12)}
+.btn{display:inline-flex;align-items:center;gap:var(--space-2);padding:var(--space-3) var(--space-5);border-radius:var(--radius-md);font-size:var(--text-sm);font-weight:500;cursor:pointer;border:1px solid transparent;transition:all var(--transition)}
+.btn-primary{background:var(--color-primary);color:#fff}
+.btn-primary:hover{background:var(--color-primary-hover)}
+.btn-primary:active{background:var(--color-primary-active)}
+.btn-secondary{background:var(--color-surface-offset);border-color:var(--color-border);color:var(--color-text)}
+.btn-secondary:hover{background:var(--color-surface-dynamic)}
+.btn-ghost{color:var(--color-text-muted)}
+.btn-ghost:hover{background:var(--color-surface-offset);color:var(--color-text)}
+.btn-sm{padding:var(--space-2) var(--space-3);font-size:var(--text-xs)}
+.btn-full{width:100%;justify-content:center}
+#login-error{color:var(--color-error);font-size:var(--text-sm);margin-top:var(--space-3);display:none;padding:var(--space-3);background:var(--color-error-highlight);border-radius:var(--radius-md)}
+
+/* APP SHELL */
+#app{display:none;height:100dvh;overflow:hidden}
+.app-layout{display:grid;grid-template-columns:var(--sidebar-w) 1fr;grid-template-rows:var(--header-h) 1fr;height:100dvh}
+
+/* HEADER */
+.app-header{grid-column:1/-1;display:flex;align-items:center;background:var(--color-surface);border-bottom:1px solid var(--color-border);padding:0 var(--space-5);gap:var(--space-3);height:var(--header-h);position:sticky;top:0;z-index:100;box-shadow:var(--shadow-sm)}
+.header-logo{display:flex;align-items:center;gap:var(--space-2);font-weight:700;font-size:var(--text-sm);color:var(--color-primary);min-width:calc(var(--sidebar-w) - var(--space-5))}
+.header-spacer{flex:1}
+.header-user{display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-sm);color:var(--color-text-muted)}
+.header-user strong{color:var(--color-text)}
+#theme-toggle{padding:var(--space-2);border-radius:var(--radius-md);color:var(--color-text-muted)}
+#theme-toggle:hover{background:var(--color-surface-offset);color:var(--color-text)}
+
+/* SIDEBAR */
+.app-sidebar{background:var(--color-surface);border-right:1px solid var(--color-border);padding:var(--space-4) var(--space-3);overflow-y:auto}
+.nav-section{margin-bottom:var(--space-4)}
+.nav-label{font-size:var(--text-xs);font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--color-text-faint);padding:0 var(--space-3);margin-bottom:var(--space-1)}
+.nav-item{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-2) var(--space-3);border-radius:var(--radius-md);font-size:var(--text-sm);color:var(--color-text-muted);cursor:pointer;user-select:none;transition:all var(--transition)}
+.nav-item:hover{background:var(--color-surface-offset);color:var(--color-text)}
+.nav-item.active{background:var(--color-primary-highlight);color:var(--color-primary);font-weight:500}
+.nav-item i{flex-shrink:0;width:16px;height:16px}
+.nav-badge{margin-left:auto;background:var(--color-notification);color:#fff;font-size:.58rem;padding:1px 5px;border-radius:var(--radius-full);font-weight:700}
+
+/* MAIN */
+.app-main{overflow-y:auto;padding:var(--space-6);background:var(--color-bg)}
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:var(--space-5);gap:var(--space-4);flex-wrap:wrap}
+.page-title{font-size:var(--text-xl);font-weight:700;letter-spacing:-.03em;color:var(--color-text);line-height:1.2}
+.page-subtitle{font-size:var(--text-sm);color:var(--color-text-muted);margin-top:var(--space-1)}
+.page-actions{display:flex;gap:var(--space-2);flex-wrap:wrap;align-items:center}
+
+/* KPI CARDS */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(185px,100%),1fr));gap:var(--space-4);margin-bottom:var(--space-5)}
+.kpi-card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:var(--space-5);box-shadow:var(--shadow-sm)}
+.kpi-label{font-size:var(--text-xs);color:var(--color-text-muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:var(--space-2)}
+.kpi-value{font-size:var(--text-xl);font-weight:700;font-variant-numeric:tabular-nums;line-height:1;color:var(--color-text);transition:color .4s}
+.kpi-value.warn{color:var(--color-warning)}
+.kpi-value.danger{color:var(--color-notification)}
+.kpi-value.success{color:var(--color-success)}
+.kpi-sub{font-size:var(--text-xs);color:var(--color-text-faint);margin-top:var(--space-1)}
+
+/* FILTERS */
+.filters-bar{display:flex;gap:var(--space-3);flex-wrap:wrap;align-items:flex-end;background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:var(--space-4) var(--space-5);margin-bottom:var(--space-4);box-shadow:var(--shadow-sm)}
+.filter-group{display:flex;flex-direction:column;gap:var(--space-1);min-width:130px}
+.filter-group label{font-size:var(--text-xs);font-weight:700;color:var(--color-text-muted);text-transform:uppercase;letter-spacing:.05em}
+.filter-group select,.filter-group input[type="date"]{background:var(--color-bg);border:1px solid var(--color-border);border-radius:var(--radius-md);padding:var(--space-2) var(--space-3);font-size:var(--text-sm);color:var(--color-text)}
+.filter-group select:focus,.filter-group input[type="date"]:focus{border-color:var(--color-primary);outline:none;box-shadow:0 0 0 3px rgba(1,105,111,.1)}
+
+/* CHARTS */
+.charts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(460px,100%),1fr));gap:var(--space-4);margin-bottom:var(--space-5)}
+.chart-card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:var(--space-5);box-shadow:var(--shadow-sm)}
+.chart-card.full{grid-column:1/-1}
+.chart-title{font-size:var(--text-sm);font-weight:600;color:var(--color-text);margin-bottom:var(--space-4);display:flex;align-items:center;gap:var(--space-2)}
+.chart-wrap{position:relative;height:260px}
+
+/* HEATMAP */
+.heatmap-outer{overflow-x:auto;padding-bottom:var(--space-2)}
+.heatmap-container{display:inline-flex;gap:var(--space-3);align-items:flex-start}
+.heatmap-y-labels{display:flex;flex-direction:column;gap:3px;padding-top:26px}
+.heatmap-y-label{height:34px;display:flex;align-items:center;font-size:var(--text-xs);color:var(--color-text-muted);font-weight:600;white-space:nowrap;padding-right:var(--space-2)}
+.heatmap-body{display:flex;flex-direction:column;gap:3px}
+.heatmap-x-labels{display:flex;gap:3px;margin-bottom:var(--space-2)}
+.heatmap-x-label{width:34px;text-align:center;font-size:var(--text-xs);color:var(--color-text-muted);font-weight:600}
+.heatmap-row{display:flex;gap:3px}
+.hm-cell{width:34px;height:34px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:.58rem;font-weight:700;font-family:var(--font-mono);cursor:default;transition:transform .15s,box-shadow .15s;position:relative}
+.hm-cell:hover{transform:scale(1.2);box-shadow:var(--shadow-md);z-index:2}
+.hm-tooltip{position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:var(--color-text);color:var(--color-bg);font-size:.6rem;padding:2px 6px;border-radius:var(--radius-sm);white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:10;font-family:var(--font-body)}
+.hm-cell:hover .hm-tooltip{opacity:1}
+
+/* TABLE */
+.table-card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);margin-bottom:var(--space-4)}
+.table-header{display:flex;align-items:center;justify-content:space-between;padding:var(--space-4) var(--space-5);border-bottom:1px solid var(--color-divider);gap:var(--space-3);flex-wrap:wrap}
+.table-title{font-size:var(--text-sm);font-weight:600;display:flex;align-items:center;gap:var(--space-2)}
+.table-wrap{overflow-x:auto}
+.data-table{font-size:var(--text-xs)}
+.data-table th{background:var(--color-surface-offset);padding:var(--space-3) var(--space-4);text-align:left;font-weight:700;color:var(--color-text-muted);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--color-divider);white-space:nowrap}
+.data-table td{padding:var(--space-3) var(--space-4);border-bottom:1px solid var(--color-divider);color:var(--color-text);vertical-align:middle;white-space:nowrap;font-variant-numeric:tabular-nums}
+.data-table tr:last-child td{border-bottom:none}
+.data-table tr:hover td{background:var(--color-surface-offset)}
+.load-bar-wrap{display:flex;align-items:center;gap:var(--space-2);min-width:110px}
+.load-bar-bg{flex:1;height:5px;background:var(--color-surface-dynamic);border-radius:var(--radius-full);overflow:hidden}
+.load-bar-fill{height:100%;border-radius:var(--radius-full);transition:width .4s ease}
+.load-val{font-size:var(--text-xs);font-variant-numeric:tabular-nums;min-width:36px;text-align:right}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;gap:3px;font-size:.6rem;font-weight:700;padding:2px 7px;border-radius:var(--radius-full);letter-spacing:.05em;text-transform:uppercase}
+.badge-ok{background:var(--color-success-highlight);color:var(--color-success)}
+.badge-warn{background:var(--color-warning-highlight);color:var(--color-warning)}
+.badge-danger{background:#fce;color:var(--color-error)}
+.badge-in{background:#d0e7f5;color:#00527a}
+.badge-out{background:var(--color-primary-highlight);color:var(--color-primary)}
+.badge-return{background:var(--color-warning-highlight);color:var(--color-warning)}
+
+/* PVZ CARDS */
+.pvz-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:var(--space-4);margin-bottom:var(--space-5)}
+.pvz-card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:var(--space-5);box-shadow:var(--shadow-sm);cursor:pointer;transition:box-shadow var(--transition),transform var(--transition)}
+.pvz-card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
+.pvz-card-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:var(--space-2)}
+.pvz-id{font-size:var(--text-xs);color:var(--color-text-faint);font-family:var(--font-mono)}
+.pvz-address{font-size:var(--text-sm);font-weight:500;color:var(--color-text);margin-bottom:2px}
+.pvz-region{font-size:var(--text-xs);color:var(--color-text-muted)}
+.pvz-meta{display:flex;gap:var(--space-5);margin-top:var(--space-3);border-top:1px solid var(--color-divider);padding-top:var(--space-3)}
+.pvz-meta-item{display:flex;flex-direction:column;gap:2px}
+.pvz-meta-label{font-size:.58rem;text-transform:uppercase;letter-spacing:.06em;color:var(--color-text-faint);font-weight:700}
+.pvz-meta-val{font-size:var(--text-sm);font-weight:700;font-variant-numeric:tabular-nums}
+
+/* FORM */
+.form-card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:var(--space-6);box-shadow:var(--shadow-sm);max-width:580px}
+.form-grid{display:flex;flex-direction:column;gap:var(--space-4)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4)}
+.form-group{display:flex;flex-direction:column;gap:var(--space-2)}
+.form-group label{font-size:var(--text-sm);font-weight:500;color:var(--color-text-muted)}
+.form-group input,.form-group select{background:var(--color-bg);border:1px solid var(--color-border);border-radius:var(--radius-md);padding:var(--space-3) var(--space-4);font-size:var(--text-sm)}
+.form-group input:focus,.form-group select:focus{border-color:var(--color-primary);outline:none;box-shadow:0 0 0 3px rgba(1,105,111,.1)}
+.form-actions{display:flex;gap:var(--space-3);margin-top:var(--space-2)}
+.form-msg{font-size:var(--text-sm);padding:var(--space-3) var(--space-4);border-radius:var(--radius-md);display:none;margin-top:var(--space-3)}
+.form-msg.success{background:var(--color-success-highlight);color:var(--color-success);display:block}
+.form-msg.error{background:var(--color-error-highlight);color:var(--color-error);display:block}
+
+/* PAGINATION */
+.pagination{display:flex;align-items:center;gap:var(--space-2);justify-content:flex-end;padding:var(--space-3) var(--space-5);border-top:1px solid var(--color-divider)}
+.pagination .page-info{font-size:var(--text-xs);color:var(--color-text-muted);margin-right:auto}
+
+/* TOAST */
+#toast-container{position:fixed;bottom:var(--space-5);right:var(--space-5);z-index:9999;display:flex;flex-direction:column;gap:var(--space-2);pointer-events:none}
+.toast{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:var(--space-3) var(--space-5);font-size:var(--text-sm);box-shadow:var(--shadow-lg);pointer-events:all;animation:slide-in .25s ease;display:flex;align-items:center;gap:var(--space-3);max-width:340px}
+.toast.success{border-color:var(--color-success);background:var(--color-success-highlight);color:var(--color-success)}
+.toast.error{border-color:var(--color-error);background:var(--color-error-highlight);color:var(--color-error)}
+@keyframes slide-in{from{transform:translateX(100%);opacity:0}to{transform:none;opacity:1}}
+
+/* EMPTY STATE */
+.empty-state{display:flex;flex-direction:column;align-items:center;text-align:center;padding:var(--space-16) var(--space-8);color:var(--color-text-muted)}
+.empty-state svg{width:44px;height:44px;margin-bottom:var(--space-4);color:var(--color-text-faint)}
+.empty-state h3{color:var(--color-text);margin-bottom:var(--space-2);font-size:var(--text-lg)}
+.empty-state p{max-width:36ch;font-size:var(--text-sm)}
+
+/* SKELETON */
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+.skeleton{background:linear-gradient(90deg,var(--color-surface-offset) 25%,var(--color-surface-dynamic) 50%,var(--color-surface-offset) 75%);background-size:200% 100%;animation:shimmer 1.5s ease-in-out infinite;border-radius:var(--radius-sm)}
+
+/* SECTIONS */
+.section{display:none}.section.active{display:block}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .app-layout{grid-template-columns:1fr;grid-template-rows:var(--header-h) auto 1fr}
+  .app-sidebar{grid-row:2;border-right:none;border-bottom:1px solid var(--color-border);padding:var(--space-2);display:flex;gap:var(--space-1);overflow-x:auto;overflow-y:visible}
+  .nav-section{margin-bottom:0;display:flex;gap:var(--space-1)}
+  .nav-label{display:none}
+  .nav-item{white-space:nowrap;font-size:var(--text-xs);padding:var(--space-2) var(--space-3)}
+  .app-main{padding:var(--space-3)}
+  .kpi-grid{grid-template-columns:repeat(2,1fr)}
+  .charts-grid{grid-template-columns:1fr}
+  .form-row{grid-template-columns:1fr}
+  #toast-container{bottom:var(--space-3);right:var(--space-3)}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <svg width="30" height="30" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="currentColor" opacity=".12"/><path d="M8 22V12a2 2 0 012-2h12a2 2 0 012 2v10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M6 22h20M13 22v-5h6v5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16" cy="8" r="2" fill="currentColor"/></svg>
+      <span>ПВЗ Monitor</span>
+    </div>
+    <p class="login-subtitle">Мониторинг загрузки пунктов выдачи заказов</p>
+    <div class="demo-table">
+      <div class="dt-title">Демо-аккаунты</div>
+      <div class="demo-row"><span class="demo-cred">operator1</span> / <span class="demo-cred">op1pass</span> <span class="role-badge role-operator">Оператор ПВЗ №1</span></div>
+      <div class="demo-row" style="margin-top:4px"><span class="demo-cred">supervisor1</span> / <span class="demo-cred">suppass</span> <span class="role-badge role-supervisor">Супервайзер</span></div>
+      <div class="demo-row" style="margin-top:4px"><span class="demo-cred">analyst1</span> / <span class="demo-cred">anapass</span> <span class="role-badge role-analyst">Аналитик</span></div>
+    </div>
+    <div class="field-group">
+      <label>Логин</label>
+      <input type="text" id="login-user" value="analyst1" autocomplete="username">
+    </div>
+    <div class="field-group">
+      <label>Пароль</label>
+      <input type="password" id="login-pass" value="anapass" autocomplete="current-password">
+    </div>
+    <div id="login-error"></div>
+    <button class="btn btn-primary btn-full" style="margin-top:var(--space-4)" onclick="doLogin()">Войти</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="app-layout">
+    <header class="app-header">
+      <div class="header-logo">
+        <svg width="22" height="22" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="currentColor" opacity=".15"/><path d="M8 22V12a2 2 0 012-2h12a2 2 0 012 2v10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M6 22h20M13 22v-5h6v5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16" cy="8" r="2" fill="currentColor"/></svg>
+        ПВЗ Monitor
+      </div>
+      <div class="header-spacer"></div>
+      <div class="header-user">
+        <span id="header-role-badge" class="role-badge"></span>
+        <strong id="header-name"></strong>
+      </div>
+      <button id="theme-toggle" data-theme-toggle aria-label="Переключить тему">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      </button>
+      <button class="btn btn-ghost btn-sm" onclick="doLogout()">Выйти</button>
+    </header>
+
+    <aside class="app-sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Меню</div>
+        <div class="nav-item active" onclick="nav('dashboard')" id="nav-dashboard">
+          <i data-lucide="layout-dashboard"></i> Дашборд
+        </div>
+        <div class="nav-item" onclick="nav('report')" id="nav-report">
+          <i data-lucide="bar-chart-3"></i> Отчёт загрузки
+        </div>
+        <div class="nav-item" onclick="nav('heatmap')" id="nav-heatmap">
+          <i data-lucide="grid-3x3"></i> Тепловая карта
+        </div>
+        <div class="nav-item" onclick="nav('pvz')" id="nav-pvz">
+          <i data-lucide="map-pin"></i> Пункты ПВЗ
+        </div>
+        <div class="nav-item" onclick="nav('operations')" id="nav-operations">
+          <i data-lucide="list-ordered"></i> Операции
+        </div>
+        <div class="nav-item" onclick="nav('add-op')" id="nav-add-op">
+          <i data-lucide="plus-circle"></i> Добавить операцию
+        </div>
+        <div class="nav-item" onclick="nav('errors')" id="nav-errors" style="display:none">
+          <i data-lucide="triangle-alert"></i> Журнал ошибок
+          <span class="nav-badge" id="errors-badge">!</span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="app-main" id="app-main">
+
+      <!-- DASHBOARD -->
+      <div class="section active" id="section-dashboard">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Дашборд</div>
+            <div class="page-subtitle">Сводная статистика загрузки ПВЗ — Март 2025</div>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-secondary btn-sm" onclick="exportCSV()">
+              <i data-lucide="download" style="width:13px;height:13px"></i> Экспорт CSV
+            </button>
+          </div>
+        </div>
+        <div class="kpi-grid">
+          <div class="kpi-card"><div class="kpi-label">Средняя загрузка</div><div class="kpi-value" id="kpi-avg-load">—</div><div class="kpi-sub">за весь период</div></div>
+          <div class="kpi-card"><div class="kpi-label">Загрузка в часы пик</div><div class="kpi-value" id="kpi-peak-load">—</div><div class="kpi-sub">12–14 и 18–20 ч.</div></div>
+          <div class="kpi-card"><div class="kpi-label">Доля перегрузок</div><div class="kpi-value" id="kpi-overload">—</div><div class="kpi-sub">часовых интервалов &gt;100%</div></div>
+          <div class="kpi-card"><div class="kpi-label">Всего операций</div><div class="kpi-value" id="kpi-total-ops">—</div><div class="kpi-sub">за период</div></div>
+        </div>
+        <div class="charts-grid">
+          <div class="chart-card">
+            <div class="chart-title"><i data-lucide="trending-up" style="width:14px;height:14px;color:var(--color-primary)"></i> Загрузка по дням</div>
+            <div class="chart-wrap"><canvas id="chart-daily"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title"><i data-lucide="pie-chart" style="width:14px;height:14px;color:var(--color-primary)"></i> Структура операций</div>
+            <div class="chart-wrap"><canvas id="chart-types"></canvas></div>
+          </div>
+          <div class="chart-card full">
+            <div class="chart-title"><i data-lucide="bar-chart-2" style="width:14px;height:14px;color:var(--color-primary)"></i> Средняя загрузка по ПВЗ</div>
+            <div class="chart-wrap"><canvas id="chart-pvz-compare"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- REPORT -->
+      <div class="section" id="section-report">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Отчёт загрузки ПВЗ</div>
+            <div class="page-subtitle">load = ops_per_hour / capacity_per_hour</div>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-primary btn-sm" onclick="loadReport()"><i data-lucide="refresh-cw" style="width:13px;height:13px"></i> Обновить</button>
+            <button class="btn btn-secondary btn-sm" onclick="exportCSV()"><i data-lucide="download" style="width:13px;height:13px"></i> CSV</button>
+          </div>
+        </div>
+        <div class="filters-bar">
+          <div class="filter-group"><label>ПВЗ</label><select id="r-pvz-filter"><option value="">Все</option></select></div>
+          <div class="filter-group"><label>Регион</label><select id="r-region-filter"><option value="">Все</option></select></div>
+          <div class="filter-group"><label>Тип</label>
+            <select id="r-type-filter">
+              <option value="">Все</option>
+              <option value="in">Приём (in)</option>
+              <option value="out">Выдача (out)</option>
+              <option value="return">Возврат (return)</option>
+            </select>
+          </div>
+          <div class="filter-group"><label>Дата с</label><input type="date" id="r-date-from" value="2025-03-01"></div>
+          <div class="filter-group"><label>Дата по</label><input type="date" id="r-date-to" value="2025-03-31"></div>
+          <button class="btn btn-primary btn-sm" onclick="loadReport()" style="align-self:flex-end;margin-bottom:1px">Применить</button>
+        </div>
+        <div class="table-card">
+          <div class="table-header">
+            <span class="table-title"><i data-lucide="table" style="width:13px;height:13px"></i> Детализация по часам</span>
+            <span id="report-count" style="font-size:var(--text-xs);color:var(--color-text-muted)"></span>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr>
+                <th>ПВЗ</th><th>Адрес</th><th>Дата</th><th>Час</th>
+                <th>Ops/ч</th><th>Ёмк./ч</th>
+                <th title="Приём">in</th><th title="Выдача">out</th><th title="Возврат">ret</th>
+                <th>Загрузка</th><th>Статус</th>
+              </tr></thead>
+              <tbody id="report-tbody"></tbody>
+            </table>
+          </div>
+          <div class="pagination">
+            <span class="page-info" id="report-page-info"></span>
+            <button class="btn btn-secondary btn-sm" id="report-prev" onclick="reportPage(-1)">← Назад</button>
+            <button class="btn btn-secondary btn-sm" id="report-next" onclick="reportPage(1)">Вперёд →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- HEATMAP -->
+      <div class="section" id="section-heatmap">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Тепловая карта</div>
+            <div class="page-subtitle">Средняя загрузка по часу × день недели</div>
+          </div>
+        </div>
+        <div class="filters-bar">
+          <div class="filter-group"><label>ПВЗ</label><select id="hm-pvz-filter"><option value="">—</option></select></div>
+          <div class="filter-group"><label>Дата с</label><input type="date" id="hm-date-from" value="2025-03-01"></div>
+          <div class="filter-group"><label>Дата по</label><input type="date" id="hm-date-to" value="2025-03-31"></div>
+          <button class="btn btn-primary btn-sm" onclick="loadHeatmap()" style="align-self:flex-end">Построить</button>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title"><i data-lucide="grid-3x3" style="width:14px;height:14px;color:var(--color-primary)"></i> Тепловая карта загрузки <span id="hm-pvz-label" style="color:var(--color-text-muted);font-weight:400;font-size:var(--text-xs)"></span></div>
+          <div style="display:flex;gap:var(--space-8);align-items:center;margin-bottom:var(--space-4);flex-wrap:wrap">
+            <div style="font-size:var(--text-xs);color:var(--color-text-muted)">Ёмкость/ч: <strong id="hm-capacity" style="color:var(--color-text)"></strong></div>
+            <div style="display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-xs);color:var(--color-text-muted)">
+              <div style="width:14px;height:14px;border-radius:3px;background:#d4dfcc"></div> 0–50%
+              <div style="width:14px;height:14px;border-radius:3px;background:#88b96e;margin-left:6px"></div> 50–75%
+              <div style="width:14px;height:14px;border-radius:3px;background:#e8af34;margin-left:6px"></div> 75–100%
+              <div style="width:14px;height:14px;border-radius:3px;background:#a13544;margin-left:6px"></div> &gt;100%
+            </div>
+          </div>
+          <div class="heatmap-outer" id="heatmap-area">
+            <div class="empty-state" style="padding:var(--space-8)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+              <p>Выберите ПВЗ и нажмите «Построить»</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PVZ LIST -->
+      <div class="section" id="section-pvz">
+        <div class="page-header">
+          <div><div class="page-title">Пункты ПВЗ</div><div class="page-subtitle">Справочник пунктов выдачи заказов</div></div>
+        </div>
+        <div class="pvz-grid" id="pvz-grid">
+          <div class="skeleton" style="height:140px;border-radius:var(--radius-lg)"></div>
+          <div class="skeleton" style="height:140px;border-radius:var(--radius-lg)"></div>
+          <div class="skeleton" style="height:140px;border-radius:var(--radius-lg)"></div>
+        </div>
+      </div>
+
+      <!-- OPERATIONS -->
+      <div class="section" id="section-operations">
+        <div class="page-header">
+          <div><div class="page-title">Операции</div><div class="page-subtitle">Журнал приёма, выдачи и возвратов</div></div>
+        </div>
+        <div class="filters-bar">
+          <div class="filter-group"><label>ПВЗ</label><select id="op-pvz-filter"><option value="">Все</option></select></div>
+          <div class="filter-group"><label>Тип</label>
+            <select id="op-type-filter">
+              <option value="">Все</option>
+              <option value="in">Приём (in)</option>
+              <option value="out">Выдача (out)</option>
+              <option value="return">Возврат (return)</option>
+            </select>
+          </div>
+          <div class="filter-group"><label>Дата с</label><input type="date" id="op-date-from" value="2025-03-01"></div>
+          <div class="filter-group"><label>Дата по</label><input type="date" id="op-date-to" value="2025-03-31"></div>
+          <button class="btn btn-primary btn-sm" onclick="loadOperations()" style="align-self:flex-end">Применить</button>
+        </div>
+        <div class="table-card">
+          <div class="table-header">
+            <span class="table-title"><i data-lucide="list-ordered" style="width:13px;height:13px"></i> Список операций</span>
+            <span id="ops-count" style="font-size:var(--text-xs);color:var(--color-text-muted)"></span>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr>
+                <th>ID</th><th>ПВЗ</th><th>Адрес</th><th>Дата/время</th><th>Тип</th>
+              </tr></thead>
+              <tbody id="ops-tbody"></tbody>
+            </table>
+          </div>
+          <div class="pagination">
+            <span class="page-info" id="ops-page-info"></span>
+            <button class="btn btn-secondary btn-sm" id="ops-prev" onclick="opsPage(-1)">← Назад</button>
+            <button class="btn btn-secondary btn-sm" id="ops-next" onclick="opsPage(1)">Вперёд →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ADD OPERATION -->
+      <div class="section" id="section-add-op">
+        <div class="page-header">
+          <div><div class="page-title">Добавить операцию</div><div class="page-subtitle">Фиксация факта приёма / выдачи / возврата</div></div>
+        </div>
+        <div class="form-card">
+          <div class="form-grid">
+            <div class="form-row">
+              <div class="form-group">
+                <label>ПВЗ *</label>
+                <select id="new-pvz-id"></select>
+              </div>
+              <div class="form-group">
+                <label>Тип операции *</label>
+                <select id="new-op-type">
+                  <option value="in">Приём (in)</option>
+                  <option value="out">Выдача (out)</option>
+                  <option value="return">Возврат (return)</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Дата и время *</label>
+              <input type="datetime-local" id="new-op-ts" value="2025-03-15T12:00">
+            </div>
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-primary" onclick="submitOperation()">Сохранить</button>
+            <button class="btn btn-secondary" onclick="nav('operations')">Отмена</button>
+          </div>
+          <div class="form-msg" id="new-op-msg"></div>
+        </div>
+      </div>
+
+      <!-- ERRORS -->
+      <div class="section" id="section-errors">
+        <div class="page-header">
+          <div><div class="page-title">Журнал ошибок</div><div class="page-subtitle">Операции вне часов работы и нарушения валидации</div></div>
+        </div>
+        <div class="table-card">
+          <div class="table-header">
+            <span class="table-title"><i data-lucide="triangle-alert" style="width:13px;height:13px;color:var(--color-warning)"></i> Проблемные записи</span>
+            <span id="err-count" style="font-size:var(--text-xs);color:var(--color-text-muted)"></span>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>ID</th><th>ПВЗ</th><th>Время</th><th>Тип</th><th>Причина</th><th>Зафиксировано</th></tr></thead>
+              <tbody id="err-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div id="toast-container"></div>
+
+<script>
+// ─── STATE ────────────────────────────────────────────────────────────────────
+const S = {
+  user: null,
+  pvzList: [],
+  regions: [],
+  reportData: [],
+  reportPage: 0,
+  reportPageSize: 50,
+  opsData: [],
+  opsPage: 0,
+  opsPageSize: 50,
+  charts: {}
+};
+
+// ─── THEME ────────────────────────────────────────────────────────────────────
+(function(){
+  const t=document.querySelector('[data-theme-toggle]');
+  const r=document.documentElement;
+  let d=matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';
+  r.setAttribute('data-theme',d);
+  t&&t.addEventListener('click',()=>{
+    d=d==='dark'?'light':'dark';
+    r.setAttribute('data-theme',d);
+    t.innerHTML=d==='dark'
+      ?'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>'
+      :'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+    // Redraw charts for color theme
+    if(S.charts.daily){setTimeout(initDashboard,200)}
+  });
+})();
+
+// ─── UTILS ────────────────────────────────────────────────────────────────────
+function getCSSVar(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim()}
+function toast(msg,type='success'){
+  const el=document.createElement('div');
+  el.className=`toast ${type}`;
+  el.textContent=msg;
+  document.getElementById('toast-container').appendChild(el);
+  setTimeout(()=>{el.style.animation='slide-in .25s ease reverse';setTimeout(()=>el.remove(),250)},3000);
+}
+function setKPI(id,val,cls){
+  const el=document.getElementById(id);
+  if(!el)return;
+  el.textContent=val;
+  el.className='kpi-value '+(cls||'');
+}
+function loadColor(pct){
+  if(pct>100)return getComputedStyle(document.documentElement).getPropertyValue('--color-notification').trim()||'#a13544';
+  if(pct>75)return getComputedStyle(document.documentElement).getPropertyValue('--color-gold').trim()||'#d19900';
+  if(pct>50)return getComputedStyle(document.documentElement).getPropertyValue('--color-success').trim()||'#437a22';
+  return getComputedStyle(document.documentElement).getPropertyValue('--color-primary-highlight').trim()||'#cedcd8';
+}
+function hmColor(pct){
+  if(pct>100)return{bg:'#e87080',fg:'#fff'};
+  if(pct>75)return{bg:'#e8af34',fg:'#28251d'};
+  if(pct>50)return{bg:'#88b96e',fg:'#fff'};
+  if(pct>25)return{bg:'#b3d49a',fg:'#28251d'};
+  return{bg:'#d4dfcc',fg:'#7a7974'};
+}
+
+// ─── API ──────────────────────────────────────────────────────────────────────
+async function api(path,opts={}){
+  const r=await fetch('/api'+path,{headers:{'Content-Type':'application/json'},...opts});
+  const data=await r.json();
+  if(!r.ok)throw new Error(data.error||'Ошибка запроса');
+  return data;
+}
+
+// ─── AUTH ──────────────────────────────────────────────────────────────────────
+async function doLogin(){
+  const u=document.getElementById('login-user').value.trim();
+  const p=document.getElementById('login-pass').value.trim();
+  const errEl=document.getElementById('login-error');
+  errEl.style.display='none';
+  try{
+    const data=await api('/login',{method:'POST',body:JSON.stringify({username:u,password:p})});
+    S.user=data;
+    showApp();
+  }catch(e){
+    errEl.textContent=e.message;
+    errEl.style.display='block';
+  }
+}
+document.getElementById('login-pass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
+
+async function doLogout(){
+  await fetch('/api/logout',{method:'POST'});
+  S.user=null;
+  document.getElementById('app').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+}
+
+function showApp(){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').style.display='block';
+  // Set header info
+  document.getElementById('header-name').textContent=S.user.name;
+  const rb=document.getElementById('header-role-badge');
+  rb.textContent={operator:'Оператор',supervisor:'Супервайзер',analyst:'Аналитик'}[S.user.role]||S.user.role;
+  rb.className='role-badge role-'+S.user.role;
+  // Show/hide menu items
+  const role=S.user.role;
+  if(role==='operator')document.getElementById('nav-errors').style.display='none';
+  else document.getElementById('nav-errors').style.display='flex';
+  if(role==='analyst')document.getElementById('nav-add-op').style.display='flex';
+  else if(role==='operator')document.getElementById('nav-add-op').style.display='flex';
+  else document.getElementById('nav-add-op').style.display='none';
+  lucide.createIcons();
+  loadCommonData().then(()=>initDashboard());
+}
+
+async function loadCommonData(){
+  const [pvzList,regions]=await Promise.all([
+    api('/pvz'),
+    api('/regions')
+  ]);
+  S.pvzList=pvzList;
+  S.regions=regions;
+  // Populate filter selects
+  ['r-pvz-filter','op-pvz-filter','hm-pvz-filter','new-pvz-id'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    // Keep first option for multi-selects
+    const firstOpt=id==='new-pvz-id'?null:el.options[0];
+    el.innerHTML='';
+    if(firstOpt)el.appendChild(firstOpt);
+    pvzList.forEach(p=>{
+      const o=document.createElement('option');
+      o.value=p.pvz_id;
+      o.textContent=`ПВЗ ${p.pvz_id} — ${p.address.split(',').slice(1).join(',').trim()}`;
+      el.appendChild(o);
+    });
+  });
+  ['r-region-filter'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    const first=el.options[0];
+    el.innerHTML='';
+    el.appendChild(first);
+    regions.forEach(r=>{
+      const o=document.createElement('option');
+      o.value=r;o.textContent=r;
+      el.appendChild(o);
+    });
+  });
+}
+
+// ─── NAVIGATION ───────────────────────────────────────────────────────────────
+function nav(section){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const secEl=document.getElementById('section-'+section);
+  if(secEl)secEl.classList.add('active');
+  const navEl=document.getElementById('nav-'+section);
+  if(navEl)navEl.classList.add('active');
+  document.getElementById('app-main').scrollTop=0;
+  // Lazy load
+  if(section==='report')loadReport();
+  if(section==='pvz')loadPVZ();
+  if(section==='operations')loadOperations();
+  if(section==='errors')loadErrors();
+  if(section==='heatmap'){
+    const hm=document.getElementById('hm-pvz-filter');
+    if(hm&&hm.options.length>1)hm.selectedIndex=1;
+  }
+}
+
+// ─── DASHBOARD ────────────────────────────────────────────────────────────────
+async function initDashboard(){
+  const data=await api('/report/load?date_from=2025-03-01&date_to=2025-03-31');
+  const kpi=data.kpi;
+  const items=data.data;
+  // KPI
+  setKPI('kpi-avg-load',kpi.avg_load_pct+'%',kpi.avg_load_pct>75?'danger':kpi.avg_load_pct>50?'warn':'success');
+  setKPI('kpi-peak-load',kpi.avg_peak_load_pct+'%',kpi.avg_peak_load_pct>90?'danger':kpi.avg_peak_load_pct>70?'warn':'');
+  setKPI('kpi-overload',kpi.overload_share_pct+'%',kpi.overload_share_pct>20?'danger':kpi.overload_share_pct>10?'warn':'success');
+  // Total ops
+  const totalOps=items.reduce((a,b)=>a+b.ops_per_hour,0);
+  setKPI('kpi-total-ops',totalOps.toLocaleString('ru-RU'));
+
+  // Chart colors
+  const primary=getCSSVar('--color-primary');
+  const warning=getCSSVar('--color-warning');
+  const notif=getCSSVar('--color-notification');
+
+  // 1. Daily load chart
+  const byDay={};
+  items.forEach(r=>{
+    if(!byDay[r.date])byDay[r.date]={ops:0,cap:0};
+    byDay[r.date].ops+=r.ops_per_hour;
+    byDay[r.date].cap+=r.capacity_per_hour;
+  });
+  const days=Object.keys(byDay).sort();
+  const dayLoads=days.map(d=>byDay[d].ops&&byDay[d].cap?+(byDay[d].ops/byDay[d].cap*100).toFixed(1):0);
+
+  destroyChart('daily');
+  S.charts.daily=new Chart(document.getElementById('chart-daily'),{
+    type:'line',
+    data:{
+      labels:days.map(d=>d.slice(5)),
+      datasets:[{
+        label:'Средняя загрузка %',
+        data:dayLoads,
+        borderColor:primary,
+        backgroundColor:primary+'22',
+        fill:true,
+        tension:.35,
+        pointRadius:2,
+        pointHoverRadius:5,
+      },{
+        label:'Порог 100%',
+        data:days.map(()=>100),
+        borderColor:notif+'88',
+        borderDash:[4,4],
+        borderWidth:1.5,
+        pointRadius:0,
+        fill:false,
+      }]
+    },
+    options:chartOpts({y:{min:0,title:{display:true,text:'Загрузка %'}}})
+  });
+
+  // 2. Types pie
+  const typeSum={in:0,out:0,return:0};
+  items.forEach(r=>{typeSum.in+=r.ops_in;typeSum.out+=r.ops_out;typeSum.return+=r.ops_return});
+  destroyChart('types');
+  S.charts.types=new Chart(document.getElementById('chart-types'),{
+    type:'doughnut',
+    data:{
+      labels:['Приём (in)','Выдача (out)','Возврат (return)'],
+      datasets:[{data:[typeSum.in,typeSum.out,typeSum.return],
+        backgroundColor:[primary,getCSSVar('--color-success'),warning],
+        borderWidth:0,hoverOffset:8}]
+    },
+    options:{responsive:true,maintainAspectRatio:false,cutout:'62%',
+      plugins:{legend:{position:'bottom',labels:{font:{size:11},padding:14,color:getCSSVar('--color-text-muted')}},
+        tooltip:{callbacks:{label:c=>{const tot=c.dataset.data.reduce((a,b)=>a+b,0);return` ${c.label}: ${c.parsed.toLocaleString('ru-RU')} (${(c.parsed/tot*100).toFixed(1)}%)`}}}
+      }
+    }
+  });
+
+  // 3. PVZ compare bar
+  const pvzAvg={};
+  items.forEach(r=>{
+    if(!pvzAvg[r.pvz_id])pvzAvg[r.pvz_id]={sum:0,cnt:0,cap:r.capacity_per_hour,addr:r.address};
+    pvzAvg[r.pvz_id].sum+=r.load_pct;pvzAvg[r.pvz_id].cnt++;
+  });
+  const pvzIds=Object.keys(pvzAvg);
+  const pvzLoads=pvzIds.map(id=>+(pvzAvg[id].sum/pvzAvg[id].cnt).toFixed(1));
+  const pvzLabels=pvzIds.map(id=>`ПВЗ ${id}`);
+  destroyChart('pvzCompare');
+  S.charts.pvzCompare=new Chart(document.getElementById('chart-pvz-compare'),{
+    type:'bar',
+    data:{
+      labels:pvzLabels,
+      datasets:[{
+        label:'Средняя загрузка %',
+        data:pvzLoads,
+        backgroundColor:pvzLoads.map(v=>v>100?notif:v>75?warning:primary),
+        borderRadius:6,borderSkipped:false
+      }]
+    },
+    options:{...chartOpts({y:{min:0,max:Math.max(120,...pvzLoads)+10,title:{display:true,text:'Загрузка %'}}}),
+      plugins:{...chartOpts().plugins,
+        annotation:{annotations:{line100:{type:'line',yMin:100,yMax:100,borderColor:notif+'88',borderWidth:2,borderDash:[5,5]}}}
+      }
+    }
+  });
+}
+
+function chartOpts(scales={}){
+  const textMuted=getCSSVar('--color-text-muted');
+  const divider=getCSSVar('--color-divider');
+  return{
+    responsive:true,maintainAspectRatio:false,
+    interaction:{mode:'index',intersect:false},
+    plugins:{legend:{display:false},tooltip:{backgroundColor:'#28251dee',titleColor:'#cdccca',bodyColor:'#cdccca',padding:10,cornerRadius:8}},
+    scales:{
+      x:{grid:{color:divider+'66'},ticks:{color:textMuted,font:{size:10}},border:{color:divider},...(scales.x||{})},
+      y:{grid:{color:divider+'66'},ticks:{color:textMuted,font:{size:10}},border:{color:divider},...(scales.y||{})},
+    }
+  };
+}
+function destroyChart(key){if(S.charts[key]){S.charts[key].destroy();delete S.charts[key]}}
+
+// ─── REPORT ───────────────────────────────────────────────────────────────────
+async function loadReport(){
+  const pvz=document.getElementById('r-pvz-filter').value;
+  const region=document.getElementById('r-region-filter').value;
+  const type=document.getElementById('r-type-filter').value;
+  const df=document.getElementById('r-date-from').value;
+  const dt=document.getElementById('r-date-to').value;
+  let url=`/report/load?date_from=${df}&date_to=${dt}`;
+  if(pvz)url+=`&pvz_id=${pvz}`;
+  if(region)url+=`&region=${encodeURIComponent(region)}`;
+  if(type)url+=`&type=${type}`;
+  try{
+    const data=await api(url);
+    S.reportData=data.data;
+    S.reportPage=0;
+    renderReportTable();
+    document.getElementById('report-count').textContent=`${data.data.length} интервалов`;
+  }catch(e){toast(e.message,'error')}
+}
+
+function renderReportTable(){
+  const tbody=document.getElementById('report-tbody');
+  const page=S.reportPage;
+  const size=S.reportPageSize;
+  const slice=S.reportData.slice(page*size,(page+1)*size);
+  const total=S.reportData.length;
+  document.getElementById('report-page-info').textContent=
+    `${page*size+1}–${Math.min((page+1)*size,total)} из ${total}`;
+  document.getElementById('report-prev').disabled=page===0;
+  document.getElementById('report-next').disabled=(page+1)*size>=total;
+
+  if(!slice.length){tbody.innerHTML='<tr><td colspan="11"><div class="empty-state" style="padding:var(--space-8)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:36px;height:36px;color:var(--color-text-faint)"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><p>Нет данных по заданным фильтрам</p></div></td></tr>';return}
+
+  tbody.innerHTML=slice.map(r=>{
+    const barPct=Math.min(r.load_pct,120);
+    const barColor=r.overloaded?getCSSVar('--color-notification'):r.load_pct>75?getCSSVar('--color-gold'):getCSSVar('--color-success');
+    const badge=r.overloaded
+      ?'<span class="badge badge-danger">Перегрузка</span>'
+      :'<span class="badge badge-ok">Норма</span>';
+    return `<tr>
+      <td><code style="font-family:var(--font-mono);font-size:.68rem">${r.pvz_id}</code></td>
+      <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis" title="${r.address}">${r.address.split(',').slice(1,3).join(',').trim()}</td>
+      <td>${r.date}</td>
+      <td style="text-align:center">${String(r.hour).padStart(2,'0')}:00</td>
+      <td style="text-align:center;font-weight:600">${r.ops_per_hour}</td>
+      <td style="text-align:center">${r.capacity_per_hour}</td>
+      <td style="text-align:center;color:var(--color-primary)">${r.ops_in}</td>
+      <td style="text-align:center;color:var(--color-success)">${r.ops_out}</td>
+      <td style="text-align:center;color:var(--color-warning)">${r.ops_return}</td>
+      <td>
+        <div class="load-bar-wrap">
+          <div class="load-bar-bg"><div class="load-bar-fill" style="width:${barPct}%;background:${barColor}"></div></div>
+          <span class="load-val" style="color:${r.overloaded?'var(--color-notification)':r.load_pct>75?'var(--color-warning)':'var(--color-text)'}">${r.load_pct}%</span>
+        </div>
+      </td>
+      <td>${badge}</td>
+    </tr>`;
+  }).join('');
+}
+function reportPage(dir){S.reportPage=Math.max(0,S.reportPage+dir);renderReportTable()}
+
+// ─── HEATMAP ──────────────────────────────────────────────────────────────────
+async function loadHeatmap(){
+  const pvzId=document.getElementById('hm-pvz-filter').value||'';
+  const df=document.getElementById('hm-date-from').value;
+  const dt=document.getElementById('hm-date-to').value;
+  if(!pvzId){toast('Выберите ПВЗ','error');return}
+  let url=`/report/heatmap?pvz_id=${pvzId}&date_from=${df}&date_to=${dt}`;
+  try{
+    const data=await api(url);
+    renderHeatmap(data);
+    document.getElementById('hm-pvz-label').textContent=
+      `— ПВЗ ${pvzId}`;
+    document.getElementById('hm-capacity').textContent=data.capacity_per_hour+' оп/ч';
+  }catch(e){toast(e.message,'error')}
+}
+
+function renderHeatmap(data){
+  const area=document.getElementById('heatmap-area');
+  const DAYS=data.day_names;  // Пн..Вс
+  const HOURS=Array.from({length:13},(_, i)=>9+i); // 9..21
+
+  // Build lookup
+  const lk={};
+  data.matrix.forEach(m=>{lk[`${m.day}_${m.hour}`]=m});
+
+  let html='<div class="heatmap-container">';
+  // Y labels
+  html+='<div class="heatmap-y-labels">';
+  DAYS.forEach(d=>html+=`<div class="heatmap-y-label">${d}</div>`);
+  html+='</div>';
+  // Body
+  html+='<div class="heatmap-body">';
+  // X labels
+  html+='<div class="heatmap-x-labels">';
+  HOURS.forEach(h=>html+=`<div class="heatmap-x-label">${h}</div>`);
+  html+='</div>';
+  // Rows
+  DAYS.forEach((d,di)=>{
+    html+=`<div class="heatmap-row">`;
+    HOURS.forEach(h=>{
+      const m=lk[`${di}_${h}`];
+      const pct=m?m.load_pct:0;
+      const ops=m?m.ops:0;
+      const {bg,fg}=hmColor(pct);
+      html+=`<div class="hm-cell" style="background:${bg};color:${fg}" title="${d} ${h}:00 — ${pct}% (${ops} оп)">
+        ${pct?pct+'%':''}
+        <span class="hm-tooltip">${d} ${h}:00<br>${pct}% | ${ops} оп</span>
+      </div>`;
+    });
+    html+='</div>';
+  });
+  html+='</div></div>';
+  area.innerHTML=html;
+}
+
+// ─── PVZ LIST ─────────────────────────────────────────────────────────────────
+async function loadPVZ(){
+  const grid=document.getElementById('pvz-grid');
+  try{
+    const pvzList=await api('/pvz');
+    const WEEKDAYS=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+    grid.innerHTML=pvzList.map(p=>`
+      <div class="pvz-card" onclick="nav('report')">
+        <div class="pvz-card-head">
+          <span class="pvz-id">PVZ-${String(p.pvz_id).padStart(3,'0')}</span>
+          <span class="badge badge-ok">Активен</span>
+        </div>
+        <div class="pvz-address">${p.address}</div>
+        <div class="pvz-region">${p.region}</div>
+        <div class="pvz-meta">
+          <div class="pvz-meta-item">
+            <span class="pvz-meta-label">Ёмкость/ч</span>
+            <span class="pvz-meta-val">${p.capacity_per_hour}</span>
+          </div>
+          <div class="pvz-meta-item">
+            <span class="pvz-meta-label">Регион</span>
+            <span class="pvz-meta-val" style="font-size:var(--text-xs)">${p.region}</span>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }catch(e){toast(e.message,'error')}
+}
+
+// ─── OPERATIONS ───────────────────────────────────────────────────────────────
+async function loadOperations(){
+  const pvz=document.getElementById('op-pvz-filter').value;
+  const type=document.getElementById('op-type-filter').value;
+  const df=document.getElementById('op-date-from').value;
+  const dt=document.getElementById('op-date-to').value;
+  let url=`/operations?date_from=${df}&date_to=${dt}&limit=1000`;
+  if(pvz)url+=`&pvz_id=${pvz}`;
+  if(type)url+=`&type=${type}`;
+  try{
+    const data=await api(url);
+    S.opsData=data.data;
+    S.opsPage=0;
+    document.getElementById('ops-count').textContent=`${data.total.toLocaleString('ru-RU')} записей`;
+    renderOpsTable();
+  }catch(e){toast(e.message,'error')}
+}
+function renderOpsTable(){
+  const tbody=document.getElementById('ops-tbody');
+  const page=S.opsPage,size=S.opsPageSize;
+  const slice=S.opsData.slice(page*size,(page+1)*size);
+  const total=S.opsData.length;
+  document.getElementById('ops-page-info').textContent=`${page*size+1}–${Math.min((page+1)*size,total)} из ${total}`;
+  document.getElementById('ops-prev').disabled=page===0;
+  document.getElementById('ops-next').disabled=(page+1)*size>=total;
+  const LABELS={in:'badge-in',out:'badge-out','return':'badge-return'};
+  const NAMES={in:'Приём',out:'Выдача','return':'Возврат'};
+  tbody.innerHTML=slice.map(r=>`<tr>
+    <td><code style="font-family:var(--font-mono);font-size:.65rem">${r.op_id}</code></td>
+    <td>ПВЗ ${r.pvz_id}</td>
+    <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis" title="${r.address}">${r.address.split(',').slice(1,3).join(',').trim()}</td>
+    <td>${r.ts}</td>
+    <td><span class="badge ${LABELS[r.type]||''}">${NAMES[r.type]||r.type}</span></td>
+  </tr>`).join('');
+}
+function opsPage(dir){S.opsPage=Math.max(0,S.opsPage+dir);renderOpsTable()}
+
+// ─── ADD OPERATION ────────────────────────────────────────────────────────────
+async function submitOperation(){
+  const pvz_id=parseInt(document.getElementById('new-pvz-id').value);
+  const type=document.getElementById('new-op-type').value;
+  const tsRaw=document.getElementById('new-op-ts').value;
+  const ts=tsRaw.replace('T',' ')+':00';
+  const msgEl=document.getElementById('new-op-msg');
+  msgEl.className='form-msg';msgEl.style.display='none';
+  try{
+    await api('/operations',{method:'POST',body:JSON.stringify({pvz_id,type,ts})});
+    msgEl.textContent='Операция успешно добавлена!';
+    msgEl.className='form-msg success';msgEl.style.display='block';
+    toast('Операция добавлена');
+  }catch(e){
+    msgEl.textContent=e.message;
+    msgEl.className='form-msg error';msgEl.style.display='block';
+  }
+}
+
+// ─── ERRORS ───────────────────────────────────────────────────────────────────
+async function loadErrors(){
+  try{
+    const data=await api('/errors');
+    document.getElementById('err-count').textContent=`${data.length} записей`;
+    document.getElementById('err-tbody').innerHTML=data.length
+      ?data.map(e=>`<tr>
+        <td>${e.id}</td>
+        <td>${e.pvz_id||'—'}</td>
+        <td>${e.ts||'—'}</td>
+        <td><span class="badge badge-return">${e.op_type||'—'}</span></td>
+        <td style="max-width:300px;word-break:break-word;white-space:normal">${e.reason}</td>
+        <td style="color:var(--color-text-muted)">${e.logged_at}</td>
+      </tr>`).join('')
+      :'<tr><td colspan="6"><div class="empty-state" style="padding:var(--space-8)"><p>Ошибок нет — все данные корректны</p></div></td></tr>';
+  }catch(e){toast(e.message,'error')}
+}
+
+// ─── EXPORT ───────────────────────────────────────────────────────────────────
+function exportCSV(){
+  const df=document.getElementById('r-date-from')?.value||'2025-03-01';
+  const dt=document.getElementById('r-date-to')?.value||'2025-03-31';
+  const pvz=document.getElementById('r-pvz-filter')?.value||'';
+  const type=document.getElementById('r-type-filter')?.value||'';
+  let url=`/api/export/csv?date_from=${df}&date_to=${dt}`;
+  if(pvz)url+=`&pvz_id=${pvz}`;
+  if(type)url+=`&type=${type}`;
+  window.location.href=url;
+  toast('Скачивание CSV началось');
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded',()=>{
+  lucide.createIcons();
+  // Check if already logged in
+  fetch('/api/me').then(async r=>{
+    if(r.ok){
+      S.user=await r.json();
+      showApp();
+    }
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+[
+  {
+    "pvz_id": 1,
+    "address": "Москва, ул. Тверская, д. 15",
+    "capacity_per_hour": 20,
+    "region": "Центральный"
+  },
+  {
+    "pvz_id": 2,
+    "address": "Москва, ул. Арбат, д. 22",
+    "capacity_per_hour": 15,
+    "region": "Центральный"
+  },
+  {
+    "pvz_id": 3,
+    "address": "Москва, просп. Мира, д. 78",
+    "capacity_per_hour": 25,
+    "region": "Северо-Восточный"
+  },
+  {
+    "pvz_id": 4,
+    "address": "Москва, ул. Новослободская, д. 3",
+    "capacity_per_hour": 18,
+    "region": "Северный"
+  },
+  {
+    "pvz_id": 5,
+    "address": "Москва, Ленинский просп., д. 45",
+    "capacity_per_hour": 22,
+    "region": "Юго-Западный"
+  },
+  {
+    "pvz_id": 6,
+    "address": "Москва, ул. Профсоюзная, д. 110",
+    "capacity_per_hour": 12,
+    "region": "Юго-Западный"
+  }
+]
