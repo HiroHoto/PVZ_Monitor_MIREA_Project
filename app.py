@@ -71,7 +71,7 @@ def init_db():
 
     # Seed data if empty
     if cur.execute("SELECT COUNT(*) FROM pvz").fetchone()[0] == 0:
-        with open(os.path.join(DATA_DIR, "pvz.json")) as f:
+        with open(os.path.join(DATA_DIR, "pvz.json"), encoding='utf-8') as f:
             pvz_data = json.load(f)
         cur.executemany(
             "INSERT OR IGNORE INTO pvz(pvz_id,address,capacity_per_hour,region) VALUES(:pvz_id,:address,:capacity_per_hour,:region)",
@@ -79,7 +79,7 @@ def init_db():
         )
 
     if cur.execute("SELECT COUNT(*) FROM schedule").fetchone()[0] == 0:
-        with open(os.path.join(DATA_DIR, "schedule.json")) as f:
+        with open(os.path.join(DATA_DIR, "schedule.json"), encoding='utf-8') as f:
             sched_data = json.load(f)
         cur.executemany(
             "INSERT INTO schedule(pvz_id,weekday,open_time,close_time) VALUES(:pvz_id,:weekday,:open_time,:close_time)",
@@ -87,7 +87,7 @@ def init_db():
         )
 
     if cur.execute("SELECT COUNT(*) FROM operations").fetchone()[0] == 0:
-        with open(os.path.join(DATA_DIR, "operations.json")) as f:
+        with open(os.path.join(DATA_DIR, "operations.json"), encoding='utf-8') as f:
             ops_data = json.load(f)
         # Validate before inserting
         valid_ops, errors = validate_operations(ops_data, conn)
