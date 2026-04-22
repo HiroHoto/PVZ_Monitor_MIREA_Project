@@ -321,7 +321,7 @@ a,button,[role="button"],input,select{transition:color var(--transition),backgro
         </div>
         <div class="nav-item" onclick="nav('errors')" id="nav-errors" style="display:none">
           <i data-lucide="triangle-alert"></i> Журнал ошибок
-          <span class="nav-badge" id="errors-badge">!</span>
+          <span class="nav-badge" id="errors-badge" style="display:none"></span>
         </div>
       </div>
     </aside>
@@ -663,13 +663,30 @@ function showApp(){
   rb.className='role-badge role-'+S.user.role;
   // Show/hide menu items
   const role=S.user.role;
-  if(role==='operator')document.getElementById('nav-errors').style.display='none';
-  else document.getElementById('nav-errors').style.display='flex';
+  if(role==='operator') {
+    // Hide dashboard and heatmap for operator
+    document.getElementById('nav-dashboard').style.display='none';
+    document.getElementById('nav-heatmap').style.display='none';
+    document.getElementById('nav-errors').style.display='none';
+  } else {
+    document.getElementById('nav-dashboard').style.display='flex';
+    document.getElementById('nav-heatmap').style.display='flex';
+    document.getElementById('nav-errors').style.display='flex';
+    // Update error badge for roles that have access to errors
+    updateErrorBadge();
+  }
   if(role==='analyst')document.getElementById('nav-add-op').style.display='flex';
   else if(role==='operator')document.getElementById('nav-add-op').style.display='flex';
   else document.getElementById('nav-add-op').style.display='none';
   lucide.createIcons();
-  loadCommonData().then(()=>initDashboard());
+  loadCommonData().then(()=>{
+    if(role==='operator') {
+      // For operator, navigate to report page instead of dashboard
+      nav('report');
+    } else {
+      initDashboard();
+    }
+  });
 }
 
 async function loadCommonData(){
@@ -1041,9 +1058,13 @@ async function submitOperation(){
     msgEl.textContent='Операция успешно добавлена!';
     msgEl.className='form-msg success';msgEl.style.display='block';
     toast('Операция добавлена');
+    // Update error badge in case an error was logged during operation validation
+    updateErrorBadge();
   }catch(e){
     msgEl.textContent=e.message;
     msgEl.className='form-msg error';msgEl.style.display='block';
+    // Also update error badge when operation fails (might be logged as error)
+    updateErrorBadge();
   }
 }
 
@@ -1062,7 +1083,34 @@ async function loadErrors(){
         <td style="color:var(--color-text-muted)">${e.logged_at}</td>
       </tr>`).join('')
       :'<tr><td colspan="6"><div class="empty-state" style="padding:var(--space-8)"><p>Ошибок нет — все данные корректны</p></div></td></tr>';
+    // Update badge after loading errors
+    updateErrorBadge(data.length);
   }catch(e){toast(e.message,'error')}
+}
+
+// Update error badge visibility and count
+async function updateErrorBadge(errorCount = null) {
+  try {
+    // If errorCount not provided, fetch from API
+    if (errorCount === null) {
+      const data = await api('/errors');
+      errorCount = data.length;
+    }
+    
+    const badge = document.getElementById('errors-badge');
+    if (!badge) return;
+    
+    if (errorCount > 0) {
+      badge.textContent = errorCount > 99 ? '99+' : errorCount.toString();
+      badge.style.display = 'inline-block';
+    } else {
+      badge.style.display = 'none';
+      badge.textContent = '';
+    }
+  } catch(e) {
+    // Silently fail if can't fetch errors
+    console.warn('Failed to update error badge:', e.message);
+  }
 }
 
 // ─── EXPORT ───────────────────────────────────────────────────────────────────
