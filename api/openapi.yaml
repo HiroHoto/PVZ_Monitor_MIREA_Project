@@ -1,0 +1,217 @@
+openapi: 3.0.3
+info:
+  title: PVZ Monitoring API
+  description: API для мониторинга нагрузки пунктов выдачи заказов (ПВЗ)
+  version: 1.0.0
+servers:
+  - url: /api
+    description: Основной сервер API
+
+paths:
+  /login:
+    post:
+      summary: Авторизация пользователя
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Успешный вход
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  username:
+                    type: string
+                  role:
+                    type: string
+                  name:
+                    type: string
+        '401':
+          description: Неверный логин или пароль
+
+  /logout:
+    post:
+      summary: Выход из системы
+      tags:
+        - Auth
+      responses:
+        '200':
+          description: Успешный выход
+
+  /me:
+    get:
+      summary: Получение информации о текущем пользователе
+      tags:
+        - Auth
+      responses:
+        '200':
+          description: Данные пользователя
+        '401':
+          description: Не авторизован
+
+  /pvz:
+    get:
+      summary: Получение списка ПВЗ
+      tags:
+        - PVZ
+      responses:
+        '200':
+          description: Список ПВЗ
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PVZ'
+
+  /pvz/{pvz_id}:
+    get:
+      summary: Получение детальной информации о ПВЗ и его расписании
+      tags:
+        - PVZ
+      parameters:
+        - name: pvz_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Данные ПВЗ и расписание
+        '404':
+          description: ПВЗ не найден
+
+  /operations:
+    get:
+      summary: Получение списка операций с фильтрацией
+      tags:
+        - Operations
+      parameters:
+        - name: pvz_id
+          in: query
+          schema:
+            type: integer
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [in, out, return]
+        - name: date_from
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: date_to
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 200
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: Список операций
+
+    post:
+      summary: Создание новой операции
+      tags:
+        - Operations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [pvz_id, ts, type]
+              properties:
+                pvz_id:
+                  type: integer
+                ts:
+                  type: string
+                  example: "2025-03-10 14:30:00"
+                type:
+                  type: string
+                  enum: [in, out, return]
+      responses:
+        '201':
+          description: Операция создана
+        '400':
+          description: Ошибка валидации или ПВЗ закрыт
+        '403':
+          description: Нет доступа к ПВЗ
+
+  /report/load:
+    get:
+      summary: Отчет по загрузке ПВЗ
+      tags:
+        - Reports
+      parameters:
+        - name: pvz_id
+          in: query
+          schema:
+            type: integer
+        - name: region
+          in: query
+          schema:
+            type: string
+        - name: date_from
+          in: query
+          schema:
+            type: string
+        - name: date_to
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Данные по загрузке и KPI
+
+  /export/csv:
+    get:
+      summary: Экспорт данных о загрузке в CSV
+      tags:
+        - Reports
+      responses:
+        '200':
+          description: CSV файл
+          content:
+            text/csv:
+              schema:
+                type: string
+                format: binary
+
+components:
+  schemas:
+    PVZ:
+      type: object
+      properties:
+        pvz_id:
+          type: integer
+        address:
+          type: string
+        capacity_per_hour:
+          type: integer
+        region:
+          type: string

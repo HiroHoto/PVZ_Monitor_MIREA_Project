@@ -1,15 +1,18 @@
-// This is a placeholder for an actual Event Storming diagram file.
-// The Event Storming session should include the following elements:
+# Event Storming Model for PVZ Monitoring System
 
-// Events:
-// - Операция добавлена в ПВЗ
-// - Перегрузка обнаружена
+[User] -> (Login) -> [User Authenticated]
 
-// Commands:
-// - Добавить операцию
-// - Уведомить о перегрузке
+[Operator] -> (Register Operation) -> [Operation Data Received]
+[Operation Data Received] -> (Validate Operation) -> [Operation Validated]
+[Operation Data Received] -> (Validate Operation) -> [Validation Failed]
 
-// Aggregates:
-// - ПВЗ связан с событиями загрузки и перегрузки
+[Validation Failed] -> (Log Error) -> [Error Logged]
 
-// Use a proper Event Storming tool to create this diagram.
+[Operation Validated] -> (Save Operation) -> [Operation Recorded]
+[Operation Recorded] -> (Check Capacity) -> [Load Calculated]
+
+[Load Calculated] -> (Compare with Capacity) -> [Overload Detected]
+[Load Calculated] -> (Compare with Capacity) -> [Normal Load Confirmed]
+
+[Supervisor/Analyst] -> (Request Report) -> [Report Generated]
+[Supervisor/Analyst] -> (Export CSV) -> [CSV File Ready]

@@ -1,13 +1,29 @@
-// This is a placeholder for an actual ER diagram file.
-// The ER diagram should represent the following entities and relationships:
+[pvz]
+  *pvz_id {label: "integer, PK"}
+  address {label: "text"}
+  capacity_per_hour {label: "integer"}
+  region {label: "text"}
 
-// Entities:
-// - pvz (id, address, capacity_per_hour)
-// - schedule (id, pvz_id, weekday, open_time, close_time)
-// - operations (id, pvz_id, ts, type)
+[schedule]
+  *id {label: "integer, PK"}
+  pvz_id {label: "integer, FK"}
+  weekday {label: "integer"}
+  open_time {label: "text"}
+  close_time {label: "text"}
 
-// Relationships:
-// - 1:N between pvz and schedule by pvz_id
-// - 1:N between pvz and operations by pvz_id
+[operations]
+  *op_id {label: "integer, PK"}
+  pvz_id {label: "integer, FK"}
+  ts {label: "text"}
+  type {label: "text"}
 
-// Use a proper ER diagramming tool to create this model.
+[error_log]
+  *id {label: "integer, PK"}
+  pvz_id {label: "integer"}
+  ts {label: "text"}
+  op_type {label: "text"}
+  reason {label: "text"}
+  logged_at {label: "text"}
+
+pvz 1--* schedule
+pvz 1--* operations
