@@ -12,4 +12,4 @@
 - ПВЗ связан с событиями загрузки и перегрузки
 
 ## Схема
-![Event Storming Diagram](event_storming_diagram.es)
+![Event Storming Diagram](../diagrams/event_storming_diagram.es)
