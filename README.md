@@ -55,18 +55,18 @@ python app.py
 ## API Эндпоинты
 | Метод | URL | Описание |
 |-------|-----|----------|
-| `POST` | `/api/login` | Аутентификация пользователя |
-| `POST` | `/api/logout` | Выход из системы |
-| `GET` | `/api/me` | Данные текущего пользователя |
-| `GET` | `/api/pvz` | Список ПВЗ (с фильтрацией по роли) |
-| `GET` | `/api/pvz/<id>` | Детали ПВЗ и расписание |
-| `GET` | `/api/regions` | Список доступных регионов |
-| `GET` | `/api/operations` | Журнал операций с фильтрами |
-| `POST` | `/api/operations` | Регистрация новой операции |
-| `GET` | `/api/report/load` | Отчёт о загрузке и KPI |
-| `GET` | `/api/report/heatmap` | Данные для тепловой карты |
-| `GET` | `/api/export/csv` | Экспорт данных в CSV |
-| `GET` | `/api/errors` | Журнал ошибок валидации |
+| `POST` | [`/api/login`](docs/05-technical/api_contract.md#post-apilogin) | Аутентификация пользователя |
+| `POST` | [`/api/logout`](docs/05-technical/api_contract.md#post-apilogout) | Выход из системы |
+| `GET` | [`/api/me`](docs/05-technical/api_contract.md#get-apime) | Данные текущего пользователя |
+| `GET` | [`/api/pvz`](docs/05-technical/api_contract.md#get-apipvz) | Список ПВЗ (с фильтрацией по роли) |
+| `GET` | [`/api/pvz/<id>`](docs/05-technical/api_contract.md#get-apipvzid) | Детали ПВЗ и расписание |
+| `GET` | [`/api/regions`](docs/05-technical/api_contract.md#get-apiregions) | Список доступных регионов |
+| `GET` | [`/api/operations`](docs/05-technical/api_contract.md#get-apioperations) | Журнал операций с фильтрами |
+| `POST` | [`/api/operations`](docs/05-technical/api_contract.md#post-apioperations) | Регистрация новой операции |
+| `GET` | [`/api/report/load`](docs/05-technical/api_contract.md#get-apireportload) | Отчёт о загрузке и KPI |
+| `GET` | [`/api/report/heatmap`](docs/05-technical/api_contract.md#get-apireportheatmap) | Данные для тепловой карты |
+| `GET` | [`/api/export/csv`](docs/05-technical/api_contract.md#get-apiexportcsv) | Экспорт данных в CSV |
+| `GET` | [`/api/errors`](docs/05-technical/api_contract.md#get-apierrors) | Журнал ошибок валидации |
 
 > Подробная спецификация: [api/openapi.yaml](api/openapi.yaml).
 
