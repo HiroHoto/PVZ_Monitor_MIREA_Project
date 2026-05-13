@@ -1,16 +1,19 @@
 # ER-диаграмма (модель данных)
 
 ## Сущности и атрибуты
-- **pvz** (id, address, capacity_per_hour)
+- **pvz** (pvz_id, address, capacity_per_hour, region)
 - **schedule** (id, pvz_id, weekday, open_time, close_time)
-- **operations** (id, pvz_id, ts, type)
+- **operations** (op_id, pvz_id, ts, type)
+- **error_log** (id, pvz_id, ts, op_type, reason, logged_at)
 
 ## Связи
 - 1:N между pvz и schedule по полю pvz_id.
 - 1:N между pvz и operations по полю pvz_id.
+- 1:N между pvz и error_log по полю pvz_id (логическая связь).
 
 ## Mermaid-схема
-![ER Diagram](data_model.er)
+
+```mermaid
 erDiagram
     pvz {
         int pvz_id PK
@@ -21,23 +24,25 @@ erDiagram
     schedule {
         int id PK
         int pvz_id FK
-        string weekday
+        int weekday
         string open_time
         string close_time
     }
     operations {
         int op_id PK
         int pvz_id FK
-        datetime ts
+        string ts
         string type
     }
     error_log {
         int id PK
-        int pvz_id
-        datetime ts
+        int pvz_id FK
+        string ts
         string op_type
         string reason
-        datetime logged_at
+        string logged_at
     }
-    pvz ||--o{ schedule : "1:N"
-    pvz ||--o{ operations : "1:N"
+    pvz ||--o{ schedule : "содержит"
+    pvz ||--o{ operations : "выполняет"
+    pvz ||--o{ error_log : "логирует"
+```
