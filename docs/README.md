@@ -1,0 +1,35 @@
+# Документация проекта «ПВЗ Monitor»
+
+## Обзор
+Система мониторинга загрузки пунктов выдачи заказов (ПВЗ) для сбалансирования нагрузки и сокращения очередей/простоя.
+
+## Структура документации
+- [Управление проектом](00-governance/)
+  - [Карточка проекта](00-governance/project_card.md)
+  - [RACI-матрица](00-governance/raci_matrix.md)
+- [Исследование и контекст](01-discovery/)
+  - [Описание проблемы](01-discovery/problem_statement.md)
+- [Требования](02-requirements/)
+  - [User Stories](02-requirements/user_stories.md)
+  - [MoSCoW-матрица](02-requirements/moscow_matrix.md)
+  - [User Story Map](02-requirements/user_story_map.md)
+  - [Feature List](02-requirements/feature_list.md)
+- [Планирование](03-planning/)
+  - [WBS](03-planning/wbs.md)
+  - [Roadmap](03-planning/roadmap.md)
+  - [Матрица рисков](03-planning/risk_matrix.md)
+  - [RACI-матрица](03-planning/raci_matrix.md)
+- [Проектирование](04-design/)
+  - [Event Storming](04-design/event_storming.md)
+  - [BPMN-описание](04-design/bpmn_description.md)
+  - [ER-диаграмма](04-design/er_diagram.md)
+  - [Диаграмма состояний](04-design/state_diagram.md)
+  - [Схема БД](04-design/db_schema.md)
+- [Техническая документация](05-technical/)
+  - [API-контракт](05-technical/api_contract.md)
+  - [Развёртывание](05-technical/deployment.md)
+  - [OpenAPI спецификация](05-technical/openapi.yaml)
+- [Контрольные точки](90-checkpoints/)
+  - [CP1 статус](90-checkpoints/CP1_status.md)
+  - [CP2 статус](90-checkpoints/CP2_status.md)
+  - [CP3 статус](90-checkpoints/CP3_status.md)

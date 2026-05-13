@@ -1,0 +1,13 @@
+// This is a placeholder for an actual ER diagram file.
+// The ER diagram should represent the following entities and relationships:
+
+// Entities:
+// - pvz (id, address, capacity_per_hour)
+// - schedule (id, pvz_id, weekday, open_time, close_time)
+// - operations (id, pvz_id, ts, type)
+
+// Relationships:
+// - 1:N between pvz and schedule by pvz_id
+// - 1:N between pvz and operations by pvz_id
+
+// Use a proper ER diagramming tool to create this model.
