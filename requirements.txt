@@ -1,3 +1,5 @@
 flask>=3.0.0
 numpy
 scipy
+pytest==8.1.1
+pytest-flask==1.3.0
