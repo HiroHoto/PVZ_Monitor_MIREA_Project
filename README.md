@@ -31,12 +31,16 @@ python app.py
 
 ## Схема базы данных
 
-```sql
-pvz (pvz_id, address, capacity_per_hour, region)
-schedule (id, pvz_id, weekday 0-6, open_time, close_time)
-operations (op_id, pvz_id, ts DATETIME, type IN {in,out,return})
-error_log (id, pvz_id, ts, op_type, reason, logged_at)
-```
+## BPMN-диаграммы
+
+Добавлена BPMN-диаграмма для процесса добавления операций в ПВЗ:
+
+![BPMN Diagram](diagrams/business_process.bpmn)
+
+## OpenAPI спецификация
+
+Создана спецификация OpenAPI для API проекта. Файл доступен по пути: [api/openapi.yaml](api/openapi.yaml).
+
 
 ---
 
@@ -56,18 +60,20 @@ error_log (id, pvz_id, ts, op_type, reason, logged_at)
 
 | Метод | URL | Описание |
 |-------|-----|----------|
-| POST | `/api/login` | Авторизация |
-| POST | `/api/logout` | Выход |
-| GET | `/api/me` | Текущий пользователь |
-| GET | `/api/pvz` | Список ПВЗ (с учётом роли) |
-| GET | `/api/pvz/<id>` | Детали ПВЗ + расписание |
-| GET | `/api/regions` | Список регионов |
-| GET | `/api/operations` | Операции с фильтрами |
-| POST | `/api/operations` | Добавить операцию |
-| GET | `/api/report/load` | Отчёт загрузки (pvz_id, date, hour, ops, capacity, load) |
-| GET | `/api/report/heatmap` | Тепловая карта (день × час) |
-| GET | `/api/export/csv` | Экспорт отчёта в CSV |
-| GET | `/api/errors` | Журнал ошибок данных |
+| POST | `/api/login` | Авторизация пользователя |
+| POST | `/api/logout` | Выход из системы |
+| GET | `/api/me` | Получение информации о текущем пользователе |
+| GET | `/api/pvz` | Получение списка ПВЗ (с учётом роли) |
+| GET | `/api/pvz/<id>` | Получение деталей ПВЗ и расписания |
+| GET | `/api/regions` | Получение списка регионов |
+| GET | `/api/operations` | Получение списка операций с фильтрами |
+| POST | `/api/operations` | Добавление новой операции |
+| GET | `/api/report/load` | Генерация отчёта о загрузке ПВЗ |
+| GET | `/api/report/heatmap` | Генерация тепловой карты загрузки |
+| GET | `/api/export/csv` | Экспорт данных в CSV |
+| GET | `/api/errors` | Получение журнала ошибок данных |
+
+> Подробная спецификация API доступна в файле [api/openapi.yaml](api/openapi.yaml).
 
 ### Фильтры для `/api/report/load`:
 - `pvz_id` — конкретный ПВЗ
