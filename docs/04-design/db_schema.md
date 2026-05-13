@@ -2,18 +2,31 @@
 
 ## Таблицы
 - **pvz** (
-    - id
+    - pvz_id (PK)
     - address
     - capacity_per_hour
-    - region [NEW]
+    - region
 )
-- **schedule** (id, pvz_id, weekday, open_time, close_time)
+- **schedule** (
+    - id (PK)
+    - pvz_id (FK)
+    - weekday
+    - open_time
+    - close_time
+)
 - **operations** (
-    - id
-    - pvz_id
+    - op_id (PK)
+    - pvz_id (FK)
     - ts
     - type
-    - status [NEW]
+)
+- **error_log** (
+    - id (PK)
+    - pvz_id
+    - ts
+    - op_type
+    - reason
+    - logged_at
 )
 
 ## Связи
