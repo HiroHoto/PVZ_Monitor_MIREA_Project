@@ -12,7 +12,6 @@
 - [Требования](02-requirements/)
   - [User Stories](02-requirements/user_stories.md)
   - [MoSCoW-матрица](02-requirements/moscow_matrix.md)
-  - [User Story Map](02-requirements/user_story_map.md)
   - [Feature List](02-requirements/feature_list.md)
 - [Планирование](03-planning/)
   - [WBS](03-planning/wbs.md)
