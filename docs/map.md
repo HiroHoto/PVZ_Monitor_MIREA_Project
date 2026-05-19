@@ -20,5 +20,4 @@
 | **04. Testing** | [Test Plan](04-testing/test_plan.md) | Стратегия, сценарии и инструменты обеспечения качества. |
 | **05. Technical** | [API Контракт](05-technical/api_contract.md) | Описание эндпоинтов и форматов обмена. |
 | | [Развёртывание](05-technical/deployment.md) | Инструкция по установке и запуску. |
-| | [Интеграции](05-technical/integration.md) | Маппинг полей между ПВЗ Monitor и внешними системами. |
 | **90. Checkpoints** | [CP Status](90-checkpoints/CP1_status.md) | Отчеты о прохождении контрольных точек. |
