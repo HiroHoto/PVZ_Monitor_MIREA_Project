@@ -20,7 +20,6 @@
 | Роль | ФИО | Контакт |
 |------|-----|---------|
 | Backend Developer | Безручко Александр Вадимович | alexander@example.com |
-| Frontend Developer | Кравченков Станислав Дмитриевич | stanislav@example.com |
 | Frontend Developer | Углев Михаил Андреевич | mikhail@example.com |
 | Backend Developer | Юркив Альберт Александрович | albert@example.com |
 | Fullstack Developer | Володин Никита Филиппович | nikita@example.com |

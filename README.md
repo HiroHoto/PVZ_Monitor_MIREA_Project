@@ -40,7 +40,6 @@ python app.py
 | **Team Lead** | Рахимов Руслан Саидович | ruslan@example.com |
 | **Backend Developer** | Безручко Александр Вадимович | alexander@example.com |
 | **Backend Developer** | Юркив Альберт Александрович | albert@example.com |
-| **Frontend Developer** | Кравченков Станислав Дмитриевич | stanislav@example.com |
 | **Frontend Developer** | Углев Михаил Андреевич | mikhail@example.com |
 | **Fullstack Developer** | Володин Никита Филиппович | nikita@example.com |
 
