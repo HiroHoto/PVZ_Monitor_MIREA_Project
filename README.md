@@ -83,19 +83,103 @@ python app.py
 pytest -v
 ```
 
-## Структура проекта
+## Структура репозитория
 ```
 .
-├── app.py              — Основной файл приложения
-├── auth.py             — Модуль аутентификации
-├── config.py           — Конфигурация и пользователи
-├── db.py               — Инициализация и работа с БД
-├── pvz.db              — Файл базы данных SQLite
-├── api/                — Спецификации API
-├── data/               — JSON-справочники и данные
-├── docs/               — Проектная документация
-├── routes/             — Маршруты API (Blueprints)
-├── templates/          — Шаблоны (index.html)
-├── tests/              — Автоматизированные тесты
-└── requirements.txt    — Зависимости
+├── .github/
+│   └── workflows/
+│       └── tests.yml                    — CI/CD конфигурация для GitHub Actions
+├── .pytest_cache/                       — Кэш pytest
+│   ├── .gitignore
+│   ├── CACHEDIR.TAG
+│   ├── README.md
+│   └── v/cache/
+│       ├── lastfailed
+│       ├── nodeids
+│       └── stepwise
+├── .vs/                                 — Visual Studio конфигурация
+│   ├── ProjectSettings.json
+│   ├── PythonSettings.json
+│   ├── slnx.sqlite
+│   ├── VSWorkspaceState.json
+│   └── Project.slnx/
+│       ├── FileContentIndex/
+│       │   ├── 6c39df2e-475a-4254-840a-400c659503e3.vsidx
+│       │   └── 19220dca-feba-45fe-967d-45d4f0662988.vsidx
+│       └── v18/
+│           ├── .wsuo
+│           ├── DocumentLayout.backup.json
+│           └── DocumentLayout.json
+├── api/
+│   └── openapi.yaml                     — OpenAPI спецификация REST API
+├── data/
+│   ├── operations.json                  — Справочник операций
+│   ├── pvz.json                         — Справочник пунктов выдачи
+│   └── schedule.json                    — Расписание работы ПВЗ
+├── diagrams/
+│   ├── business_process.bpmn            — BPMN диаграмма бизнес-процессов
+│   └── event_storming_diagram.es        — Event Storming диаграмма
+├── docs/
+│   ├── map.md                           — Карта документации
+│   ├── README.md                        — Описание документации
+│   ├── 00-governance/
+│   │   ├── project_card.md              — Карточка проекта
+│   │   ├── raci_matrix.md               — RACI-матрица ответственности
+│   │   └── task_distribution.md         — Распределение задач
+│   ├── 01-discovery/
+│   │   └── problem_statement.md         — Описание проблемы
+│   ├── 02-requirements/
+│   │   ├── feature_list.md              — Список функций
+│   │   ├── moscow_matrix.md             — MoSCoW-матрица приоритизации
+│   │   └── user_stories.md              — User Stories
+│   ├── 03-planning/
+│   │   ├── risk_matrix.md               — Матрица рисков
+│   │   ├── roadmap.md                   — Дорожная карта проекта
+│   │   └── wbs.md                       — Work Breakdown Structure
+│   ├── 04-design/
+│   │   ├── bpmn_description.md          — Описание BPMN-процессов
+│   │   ├── business_process.bpmn        — BPMN диаграмма
+│   │   ├── data_model.er                — ER-модель данных
+│   │   ├── db_schema.md                 — Схема базы данных
+│   │   ├── er_diagram.md                — ER-диаграмма
+│   │   ├── event_storming_diagram.es    — Event Storming диаграмма
+│   │   ├── event_storming.md            — Описание Event Storming
+│   │   ├── heatmap_dashboard.md         — Дизайн тепловой карты
+│   │   └── state_diagram.md             — Диаграмма состояний
+│   ├── 04-testing/
+│   │   └── test_plan.md                 — План тестирования
+│   ├── 05-technical/
+│   │   ├── api_contract.md              — API контракт и спецификация
+│   │   └── deployment.md                — Инструкция по развёртыванию
+│   └── 90-checkpoints/
+│       ├── CP1_status.md                — Статус контрольной точки 1
+│       ├── CP2_status.md                — Статус контрольной точки 2
+│       └── CP3_status.md                — Статус контрольной точки 3
+├── routes/
+│   ├── __init__.py                      — Инициализация пакета routes
+│   ├── auth.py                          — Маршруты аутентификации
+│   ├── operations.py                    — Маршруты операций
+│   ├── pvz.py                           — Маршруты ПВЗ
+│   └── reports.py                       — Маршруты отчётов
+├── templates/
+│   └── index.html                       — Главный HTML-шаблон фронтенда
+├── tests/
+│   ├── conftest.py                      — Конфигурация pytest
+│   ├── test_auth.py                     — Тесты аутентификации
+│   └── test_operations.py               — Тесты операций
+├── .gitattributes                       — Атрибуты Git
+├── .gitignore                           — Исключения Git
+├── app.py                               — Основной файл приложения Flask
+├── auth.py                              — Модуль аутентификации и авторизации
+├── config.py                            — Конфигурация приложения и пользователи
+├── db.py                                — Инициализация и работа с БД SQLite
+├── FEATURE_LIST.md                      — Список реализованных функций
+├── generate_realistic_data.py           — Скрипт генерации тестовых данных
+├── LICENSE.txt                          — Лицензия проекта
+├── nano.bat                             — Батник для редактирования файлов
+├── pvz.db                               — База данных SQLite
+├── README.md                            — Этот файл (основная документация)
+├── requirements.txt                     — Зависимости Python
+├── SRS.md                               — Software Requirements Specification
+└── TASKS.md                             — Список задач проекта
 ```
