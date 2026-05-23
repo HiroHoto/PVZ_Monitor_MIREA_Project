@@ -32,6 +32,7 @@ python app.py
 - **Requirements:** [User Stories](docs/02-requirements/user_stories.md), [MoSCoW-матрица](docs/02-requirements/moscow_matrix.md), [Feature List](docs/02-requirements/feature_list.md).
 - **Planning:** [WBS](docs/03-planning/wbs.md), [Roadmap](docs/03-planning/roadmap.md), [Матрица рисков](docs/03-planning/risk_matrix.md).
 - **Design:** [BPMN-процессы](docs/04-design/bpmn_description.md), [Схема БД](docs/04-design/db_schema.md), [ER-диаграмма](docs/04-design/er_diagram.md), [Event Storming](docs/04-design/event_storming.md), [Диаграмма состояний](docs/04-design/state_diagram.md).
+- **Data & Integration:** [Логическая модель](docs/05-data-and-integration/logical_data_model.md), [Словарь данных](docs/05-data-and-integration/data_dictionary_and_validations.md), [API Спецификация](docs/05-data-and-integration/api_specification.md).
 - **Technical:** [Инструкция по развёртыванию](docs/05-technical/deployment.md), [API Контракт](docs/05-technical/api_contract.md).
 
 ## Команда проекта

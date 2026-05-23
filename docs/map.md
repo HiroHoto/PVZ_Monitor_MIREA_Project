@@ -18,6 +18,9 @@
 | | [ER-диаграмма](04-design/er_diagram.md) | Логическая модель данных. |
 | | [Схема БД](04-design/db_schema.md) | Физическая структура таблиц SQLite. |
 | **04. Testing** | [Test Plan](04-testing/test_plan.md) | Стратегия, сценарии и инструменты обеспечения качества. |
-| **05. Technical** | [API Контракт](05-technical/api_contract.md) | Описание эндпоинтов и форматов обмена. |
+| **05. Data & Integration** | [Логическая модель](05-data-and-integration/logical_data_model.md) | Логическая модель данных и ERD. |
+| | [Словарь данных](05-data-and-integration/data_dictionary_and_validations.md) | Словарь данных и правила валидации. |
+| | [API Спецификация](05-data-and-integration/api_specification.md) | Описание REST API эндпоинтов. |
+| **06. Technical** | [API Контракт](05-technical/api_contract.md) | Описание эндпоинтов и форматов обмена. |
 | | [Развёртывание](05-technical/deployment.md) | Инструкция по установке и запуску. |
 | **90. Checkpoints** | [CP Status](90-checkpoints/CP1_status.md) | Отчеты о прохождении контрольных точек. |
