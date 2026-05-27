@@ -43,7 +43,7 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_4" bpmnElement="Flow_4">
         <di:waypoint x="425" y="155" />
-        <di:waypoint x="650" y="155" />
+        <di:waypoint x="668" y="120" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
