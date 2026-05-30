@@ -19,6 +19,8 @@
     - pvz_id (FK)
     - ts
     - type
+    - product_name — наименование товара (TEXT, NOT NULL, DEFAULT 'Не указан')
+    - weight_kg — вес товара в кг (REAL, NOT NULL, DEFAULT 0.0, CHECK ≥ 0)
 )
 - **error_log** (
     - id (PK)

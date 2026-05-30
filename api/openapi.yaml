@@ -130,6 +130,23 @@ paths:
           schema:
             type: integer
             default: 0
+        - name: product_name
+          in: query
+          schema:
+            type: string
+          description: Фильтр по наименованию товара (подстрока)
+        - name: weight_min
+          in: query
+          schema:
+            type: number
+            minimum: 0
+          description: Минимальный вес (кг)
+        - name: weight_max
+          in: query
+          schema:
+            type: number
+            minimum: 0
+          description: Максимальный вес (кг)
       responses:
         '200':
           description: Список операций
@@ -154,6 +171,17 @@ paths:
                 type:
                   type: string
                   enum: [in, out, return]
+                product_name:
+                  type: string
+                  maxLength: 200
+                  description: Наименование товара
+                  example: "Смартфон"
+                weight_kg:
+                  type: number
+                  minimum: 0
+                  maximum: 1000
+                  description: Вес товара в кг
+                  example: 0.35
       responses:
         '201':
           description: Операция создана
@@ -201,6 +229,31 @@ paths:
               schema:
                 type: string
                 format: binary
+
+  /report/top-products:
+    get:
+      summary: Топ товаров по количеству операций и суммарному весу
+      tags:
+        - Reports
+      parameters:
+        - name: date_from
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: date_to
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Список товаров с агрегированной статистикой
 
 components:
   schemas:

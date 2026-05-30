@@ -475,6 +475,7 @@ a,button,[role="button"],input,select{transition:color var(--transition),backgro
               <option value="return">Возврат (return)</option>
             </select>
           </div>
+          <div class="filter-group"><label>Товар</label><input type="text" id="op-product-filter" placeholder="Поиск..."></div>
           <div class="filter-group"><label>Дата с</label><input type="date" id="op-date-from" value="2025-03-01"></div>
           <div class="filter-group"><label>Дата по</label><input type="date" id="op-date-to" value="2025-03-31"></div>
           <button class="btn btn-primary btn-sm" onclick="loadOperations()" style="align-self:flex-end">Применить</button>
@@ -488,6 +489,7 @@ a,button,[role="button"],input,select{transition:color var(--transition),backgro
             <table class="data-table">
               <thead><tr>
                 <th>ID</th><th>ПВЗ</th><th>Адрес</th><th>Дата/время</th><th>Тип</th>
+                <th>Товар</th><th>Вес</th>
               </tr></thead>
               <tbody id="ops-tbody"></tbody>
             </table>
@@ -524,6 +526,16 @@ a,button,[role="button"],input,select{transition:color var(--transition),backgro
             <div class="form-group">
               <label>Дата и время *</label>
               <input type="datetime-local" id="new-op-ts" value="2025-03-15T12:00">
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Наименование товара</label>
+                <input type="text" id="new-op-product" placeholder="Смартфон" maxlength="200">
+              </div>
+              <div class="form-group">
+                <label>Вес (кг)</label>
+                <input type="number" id="new-op-weight" step="0.01" min="0" max="1000" placeholder="0.35">
+              </div>
             </div>
           </div>
           <div class="form-actions">
@@ -1017,6 +1029,8 @@ async function loadOperations(){
   let url=`/operations?date_from=${df}&date_to=${dt}&limit=1000`;
   if(pvz)url+=`&pvz_id=${pvz}`;
   if(type)url+=`&type=${type}`;
+  const product=document.getElementById('op-product-filter')?.value||'';
+  if(product)url+=`&product_name=${encodeURIComponent(product)}`;
   try{
     const data=await api(url);
     S.opsData=data.data;
@@ -1041,6 +1055,8 @@ function renderOpsTable(){
     <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis" title="${r.address}">${r.address.split(',').slice(1,3).join(',').trim()}</td>
     <td>${r.ts}</td>
     <td><span class="badge ${LABELS[r.type]||''}">${NAMES[r.type]||r.type}</span></td>
+    <td>${r.product_name || '—'}</td>
+    <td style="text-align:right">${r.weight_kg ? r.weight_kg.toFixed(2)+' кг' : '—'}</td>
   </tr>`).join('');
 }
 function opsPage(dir){S.opsPage=Math.max(0,S.opsPage+dir);renderOpsTable()}
@@ -1051,19 +1067,19 @@ async function submitOperation(){
   const type=document.getElementById('new-op-type').value;
   const tsRaw=document.getElementById('new-op-ts').value;
   const ts=tsRaw.replace('T',' ')+':00';
+  const product_name=document.getElementById('new-op-product').value.trim()||'Не указан';
+  const weight_kg=parseFloat(document.getElementById('new-op-weight').value)||0.0;
   const msgEl=document.getElementById('new-op-msg');
   msgEl.className='form-msg';msgEl.style.display='none';
   try{
-    await api('/operations',{method:'POST',body:JSON.stringify({pvz_id,type,ts})});
+    await api('/operations',{method:'POST',body:JSON.stringify({pvz_id,type,ts,product_name,weight_kg})});
     msgEl.textContent='Операция успешно добавлена!';
     msgEl.className='form-msg success';msgEl.style.display='block';
     toast('Операция добавлена');
-    // Update error badge in case an error was logged during operation validation
     updateErrorBadge();
   }catch(e){
     msgEl.textContent=e.message;
     msgEl.className='form-msg error';msgEl.style.display='block';
-    // Also update error badge when operation fails (might be logged as error)
     updateErrorBadge();
   }
 }

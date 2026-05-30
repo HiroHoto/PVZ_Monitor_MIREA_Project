@@ -8,7 +8,7 @@
 
 from flask import Flask, render_template
 from config import SECRET_KEY
-from db import init_db
+from db import init_db, migrate_db
 from routes.auth import bp as auth_bp
 from routes.pvz import bp as pvz_bp
 from routes.operations import bp as ops_bp
@@ -30,4 +30,5 @@ def create_app():
 
 if __name__ == "__main__":
     init_db()
+    migrate_db()
     create_app().run(debug=True, port=5000)

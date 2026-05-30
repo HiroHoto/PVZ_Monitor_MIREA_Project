@@ -46,6 +46,8 @@ erDiagram
         int pvz_id FK
         string ts
         string type
+        string product_name
+        real weight_kg
     }
     error_log {
         int id PK
@@ -92,6 +94,8 @@ erDiagram
 | `pvz_id` | INTEGER | FK → pvz.pvz_id, NOT NULL     | Ссылка на ПВЗ                         |
 | `ts`     | TEXT    | NOT NULL, ISO 8601            | Метка времени операции                |
 | `type`   | TEXT    | NOT NULL, ∈ {in, out, return} | Тип операции                          |
+| `product_name` | TEXT  | NOT NULL, DEFAULT 'Не указан', ≤ 200 символов | Наименование товара |
+| `weight_kg`    | REAL  | NOT NULL, DEFAULT 0.0, CHECK ≥ 0              | Вес товара в кг     |
 
 ### `error_log` — Лог ошибок валидации
 

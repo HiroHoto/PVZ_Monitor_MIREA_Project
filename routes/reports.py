@@ -72,7 +72,9 @@ def report_load():
             COUNT(*)                AS ops_per_hour,
             SUM(CASE WHEN o.type='in'     THEN 1 ELSE 0 END) AS ops_in,
             SUM(CASE WHEN o.type='out'    THEN 1 ELSE 0 END) AS ops_out,
-            SUM(CASE WHEN o.type='return' THEN 1 ELSE 0 END) AS ops_return
+            SUM(CASE WHEN o.type='return' THEN 1 ELSE 0 END) AS ops_return,
+            SUM(o.weight_kg) AS total_weight,
+            AVG(o.weight_kg) AS avg_weight
         FROM operations o
         JOIN pvz p ON o.pvz_id = p.pvz_id
         {where}
@@ -107,7 +109,9 @@ def report_load():
             "capacity_per_hour": cap,
             "load": load,
             "load_pct": round(load * 100, 1),
-            "overloaded": overloaded
+            "overloaded": overloaded,
+            "total_weight": round(r["total_weight"], 2),
+            "avg_weight": round(r["avg_weight"], 2)
         })
 
     # KPI
@@ -233,7 +237,9 @@ def export_csv():
         SELECT o.pvz_id, p.address, p.capacity_per_hour,
                DATE(o.ts) AS date,
                CAST(strftime('%H', o.ts) AS INTEGER) AS hour,
-               COUNT(*) AS ops
+               COUNT(*) AS ops,
+               SUM(o.weight_kg) AS total_weight,
+               AVG(o.weight_kg) AS avg_weight
         FROM operations o JOIN pvz p ON o.pvz_id=p.pvz_id
         {where}
         GROUP BY o.pvz_id, date, hour
@@ -243,12 +249,14 @@ def export_csv():
 
     output = io.StringIO()
     writer = csv.writer(output)
-    writer.writerow(["pvz_id","address","date","hour","ops","capacity","load"])
+    writer.writerow(["pvz_id","address","date","hour","ops","capacity","load","total_weight_kg","avg_weight_kg"])
     for r in rows:
         cap = r["capacity_per_hour"]
         ops = r["ops"]
         load = round(ops/cap, 4) if cap else 0
-        writer.writerow([r["pvz_id"], r["address"], r["date"], r["hour"], ops, cap, load])
+        total_w = round(r["total_weight"],2) if "total_weight" in r.keys() else 0
+        avg_w = round(r["avg_weight"],2) if "avg_weight" in r.keys() else 0
+        writer.writerow([r["pvz_id"], r["address"], r["date"], r["hour"], ops, cap, load, total_w, avg_w])
 
     output.seek(0)
     return send_file(
@@ -257,6 +265,51 @@ def export_csv():
         as_attachment=True,
         download_name=f"pvz_load_{date_from}_{date_to}.csv"
     )
+
+@bp.route("/report/top-products")
+@login_required
+def report_top_products():
+    """Топ товаров по количеству операций и суммарному весу."""
+    user = get_current_user()
+    conn = get_db()
+    
+    date_from = request.args.get("date_from", "2025-03-01")
+    date_to = request.args.get("date_to", "2025-03-31")
+    limit = int(request.args.get("limit", 20))
+    
+    conditions = ["DATE(o.ts) BETWEEN ? AND ?"]
+    params = [date_from, date_to]
+    
+    if user["role"] == "operator":
+        conditions.append("o.pvz_id=?")
+        params.append(user["pvz_id"])
+    elif user["role"] == "supervisor":
+        pvz_ids = [r[0] for r in conn.execute(
+            "SELECT pvz_id FROM pvz WHERE region=?", (user.get("region",""),)
+        ).fetchall()]
+        if pvz_ids:
+            conditions.append(f"o.pvz_id IN ({','.join('?'*len(pvz_ids))})")
+            params.extend(pvz_ids)
+    
+    where = "WHERE " + " AND ".join(conditions)
+    
+    rows = conn.execute(f"""
+        SELECT o.product_name,
+               COUNT(*) AS op_count,
+               ROUND(SUM(o.weight_kg),2) AS total_weight,
+               ROUND(AVG(o.weight_kg),2) AS avg_weight,
+               SUM(CASE WHEN o.type='in' THEN 1 ELSE 0 END) AS cnt_in,
+               SUM(CASE WHEN o.type='out' THEN 1 ELSE 0 END) AS cnt_out,
+               SUM(CASE WHEN o.type='return' THEN 1 ELSE 0 END) AS cnt_return
+        FROM operations o
+        {where}
+        GROUP BY o.product_name
+        ORDER BY op_count DESC
+        LIMIT ?
+    """, params + [limit]).fetchall()
+    conn.close()
+    
+    return jsonify([dict(r) for r in rows])
 
 @bp.route("/errors")
 @role_required("analyst", "supervisor")

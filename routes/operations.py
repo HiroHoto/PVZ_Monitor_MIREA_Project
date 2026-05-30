@@ -52,12 +52,26 @@ def get_operations():
         conditions.append("DATE(o.ts)<=?")
         params.append(date_to)
 
+    product_filter = request.args.get("product_name")
+    if product_filter:
+        conditions.append("o.product_name LIKE ?")
+        params.append(f"%{product_filter}%")
+
+    weight_min = request.args.get("weight_min")
+    weight_max = request.args.get("weight_max")
+    if weight_min:
+        conditions.append("o.weight_kg >= ?")
+        params.append(float(weight_min))
+    if weight_max:
+        conditions.append("o.weight_kg <= ?")
+        params.append(float(weight_max))
+
     where = ("WHERE " + " AND ".join(conditions)) if conditions else ""
     limit = int(request.args.get("limit", 200))
     offset = int(request.args.get("offset", 0))
 
     sql = f"""
-        SELECT o.op_id, o.pvz_id, p.address, o.ts, o.type
+        SELECT o.op_id, o.pvz_id, p.address, o.ts, o.type, o.product_name, o.weight_kg
         FROM operations o JOIN pvz p ON o.pvz_id=p.pvz_id
         {where}
         ORDER BY o.ts DESC
@@ -79,15 +93,31 @@ def get_operations():
 def create_operation():
     user = get_current_user()
     data = request.get_json()
-    pvz_id  = data.get("pvz_id")
-    ts_str  = data.get("ts")
-    op_type = data.get("type")
+    pvz_id      = data.get("pvz_id")
+    ts_str      = data.get("ts")
+    op_type     = data.get("type")
+    product_name = data.get("product_name", "Не указан")
+    weight_kg    = data.get("weight_kg", 0.0)
 
     # Validate inputs
     if not all([pvz_id, ts_str, op_type]):
         return jsonify({"error": "Необходимы pvz_id, ts, type"}), 400
     if op_type not in ("in", "out", "return"):
         return jsonify({"error": "Тип операции должен быть: in, out, return"}), 400
+
+    # Валидация product_name
+    if not isinstance(product_name, str) or len(product_name) == 0:
+        product_name = "Не указан"
+    elif len(product_name) > 200:
+        return jsonify({"error": "product_name: максимум 200 символов"}), 400
+
+    # Валидация weight_kg
+    try:
+        weight_kg = float(weight_kg)
+        if weight_kg < 0 or weight_kg > 1000:
+            return jsonify({"error": "weight_kg: от 0 до 1000 кг"}), 400
+    except (TypeError, ValueError):
+        return jsonify({"error": "weight_kg: должно быть числом"}), 400
 
     # Operator can only add to their own pvz
     if user["role"] == "operator" and user["pvz_id"] != pvz_id:
@@ -133,8 +163,8 @@ def create_operation():
         return jsonify({"error": reason}), 400
 
     cur = conn.execute(
-        "INSERT INTO operations(pvz_id,ts,type) VALUES(?,?,?)",
-        (pvz_id, ts_str, op_type)
+        "INSERT INTO operations(pvz_id,ts,type,product_name,weight_kg) VALUES(?,?,?,?,?)",
+        (pvz_id, ts_str, op_type, product_name, weight_kg)
     )
     conn.commit()
     op_id = cur.lastrowid

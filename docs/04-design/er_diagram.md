@@ -3,7 +3,7 @@
 ## Сущности и атрибуты
 - **pvz** (pvz_id, address, capacity_per_hour, region)
 - **schedule** (id, pvz_id, weekday, open_time, close_time)
-- **operations** (op_id, pvz_id, ts, type)
+- **operations** (op_id, pvz_id, ts, type, product_name, weight_kg)
 - **error_log** (id, pvz_id, ts, op_type, reason, logged_at)
 
 ## Связи
@@ -33,6 +33,8 @@ erDiagram
         int pvz_id FK
         string ts
         string type
+        string product_name
+        real weight_kg
     }
     error_log {
         int id PK
