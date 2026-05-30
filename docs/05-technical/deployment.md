@@ -2,7 +2,7 @@
 
 ## Требования
 - **OS:** Ubuntu 22.04 и выше
-- **Зависимости:** Python 3.10, Flask 3.x, SQLite
+- **Зависимости:** Python 3.10, Flask 3.x, SQLite, **numpy, scipy**
 - **Дисковое пространство:** минимум 500MB
 - **Backup:** рекомендуется ежедневный backup базы данных
 - **Обновление:** использовать команду `git pull` с последующим `pip install -r requirements.txt`
@@ -17,6 +17,13 @@ git clone https://github.com/username/pvz-monitor.git
 cd pvz-monitor
 pip install -r requirements.txt
 python app.py
+```
+
+## Миграция базы данных
+При обновлении системы необходимо запустить миграцию для добавления новых полей в таблицу операций:
+```python
+from db import migrate_db
+migrate_db()
 ```
 
 ## Продакшн (nginx + pm2)

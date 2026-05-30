@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: PVZ Monitoring API
   description: API для мониторинга нагрузки пунктов выдачи заказов (ПВЗ)
-  version: 1.0.0
+  version: 1.1.0
 servers:
   - url: /api
     description: Основной сервер API
@@ -11,8 +11,7 @@ paths:
   /login:
     post:
       summary: Авторизация пользователя
-      tags:
-        - Auth
+      tags: [Auth]
       requestBody:
         required: true
         content:
@@ -20,10 +19,8 @@ paths:
             schema:
               type: object
               properties:
-                username:
-                  type: string
-                password:
-                  type: string
+                username: {type: string}
+                password: {type: string}
       responses:
         '200':
           description: Успешный вход
@@ -32,42 +29,31 @@ paths:
               schema:
                 type: object
                 properties:
-                  ok:
-                    type: boolean
-                  username:
-                    type: string
-                  role:
-                    type: string
-                  name:
-                    type: string
-        '401':
-          description: Неверный логин или пароль
+                  ok: {type: boolean}
+                  username: {type: string}
+                  role: {type: string}
+                  name: {type: string}
+        '401': {description: Неверный логин или пароль}
 
   /logout:
     post:
       summary: Выход из системы
-      tags:
-        - Auth
+      tags: [Auth]
       responses:
-        '200':
-          description: Успешный выход
+        '200': {description: Успешный выход}
 
   /me:
     get:
       summary: Получение информации о текущем пользователе
-      tags:
-        - Auth
+      tags: [Auth]
       responses:
-        '200':
-          description: Данные пользователя
-        '401':
-          description: Не авторизован
+        '200': {description: Данные пользователя}
+        '401': {description: Не авторизован}
 
   /pvz:
     get:
       summary: Получение списка ПВЗ
-      tags:
-        - PVZ
+      tags: [PVZ]
       responses:
         '200':
           description: Список ПВЗ
@@ -75,86 +61,62 @@ paths:
             application/json:
               schema:
                 type: array
-                items:
-                  $ref: '#/components/schemas/PVZ'
+                items: {$ref: '#/components/schemas/PVZ'}
 
   /pvz/{pvz_id}:
     get:
       summary: Получение детальной информации о ПВЗ и его расписании
-      tags:
-        - PVZ
+      tags: [PVZ]
       parameters:
         - name: pvz_id
           in: path
           required: true
-          schema:
-            type: integer
+          schema: {type: integer}
       responses:
-        '200':
-          description: Данные ПВЗ и расписание
-        '404':
-          description: ПВЗ не найден
+        '200': {description: Данные ПВЗ и расписание}
+        '404': {description: ПВЗ не найден}
 
   /operations:
     get:
       summary: Получение списка операций с фильтрацией
-      tags:
-        - Operations
+      tags: [Operations]
       parameters:
         - name: pvz_id
           in: query
-          schema:
-            type: integer
+          schema: {type: integer}
         - name: type
           in: query
-          schema:
-            type: string
-            enum: [in, out, return]
+          schema: {type: string, enum: [in, out, return]}
         - name: date_from
           in: query
-          schema:
-            type: string
-            format: date
+          schema: {type: string, format: date}
         - name: date_to
           in: query
-          schema:
-            type: string
-            format: date
+          schema: {type: string, format: date}
         - name: limit
           in: query
-          schema:
-            type: integer
-            default: 200
+          schema: {type: integer, default: 200}
         - name: offset
           in: query
-          schema:
-            type: integer
-            default: 0
+          schema: {type: integer, default: 0}
         - name: product_name
           in: query
-          schema:
-            type: string
+          schema: {type: string}
           description: Фильтр по наименованию товара (подстрока)
         - name: weight_min
           in: query
-          schema:
-            type: number
-            minimum: 0
+          schema: {type: number, minimum: 0}
           description: Минимальный вес (кг)
         - name: weight_max
           in: query
-          schema:
-            type: number
-            minimum: 0
+          schema: {type: number, minimum: 0}
           description: Максимальный вес (кг)
       responses:
-        '200':
-          description: Список операций
+        '200': {description: Список операций}
 
     post:
       summary: Создание новой операции
-      tags:
-        - Operations
+      tags: [Operations]
       requestBody:
         required: true
         content:
@@ -163,14 +125,9 @@ paths:
               type: object
               required: [pvz_id, ts, type]
               properties:
-                pvz_id:
-                  type: integer
-                ts:
-                  type: string
-                  example: "2025-03-10 14:30:00"
-                type:
-                  type: string
-                  enum: [in, out, return]
+                pvz_id: {type: integer}
+                ts: {type: string, example: "2025-03-10 14:30:00"}
+                type: {type: string, enum: [in, out, return]}
                 product_name:
                   type: string
                   maxLength: 200
@@ -183,88 +140,71 @@ paths:
                   description: Вес товара в кг
                   example: 0.35
       responses:
-        '201':
-          description: Операция создана
-        '400':
-          description: Ошибка валидации или ПВЗ закрыт
-        '403':
-          description: Нет доступа к ПВЗ
+        '201': {description: Операция создана}
+        '400': {description: Ошибка валидации или ПВЗ закрыт}
+        '403': {description: Нет доступа к ПВЗ}
 
   /report/load:
     get:
       summary: Отчет по загрузке ПВЗ
-      tags:
-        - Reports
+      tags: [Reports]
       parameters:
         - name: pvz_id
           in: query
-          schema:
-            type: integer
+          schema: {type: integer}
         - name: region
           in: query
-          schema:
-            type: string
+          schema: {type: string}
         - name: date_from
           in: query
-          schema:
-            type: string
+          schema: {type: string}
         - name: date_to
           in: query
-          schema:
-            type: string
+          schema: {type: string}
       responses:
-        '200':
-          description: Данные по загрузке и KPI
+        '200': {description: Данные по загрузке и KPI}
 
   /export/csv:
     get:
       summary: Экспорт данных о загрузке в CSV
-      tags:
-        - Reports
+      tags: [Reports]
       responses:
         '200':
           description: CSV файл
           content:
             text/csv:
-              schema:
-                type: string
-                format: binary
+              schema: {type: string, format: binary}
 
   /report/top-products:
     get:
       summary: Топ товаров по количеству операций и суммарному весу
-      tags:
-        - Reports
+      tags: [Reports]
       parameters:
         - name: date_from
           in: query
-          schema:
-            type: string
-            format: date
+          schema: {type: string, format: date}
         - name: date_to
           in: query
-          schema:
-            type: string
-            format: date
+          schema: {type: string, format: date}
         - name: limit
           in: query
-          schema:
-            type: integer
-            default: 20
+          schema: {type: integer, default: 20}
       responses:
-        '200':
-          description: Список товаров с агрегированной статистикой
+        '200': {description: Список товаров с агрегированной статистикой}
+
+  /errors:
+    get:
+      summary: Журнал ошибок валидации
+      tags: [Reports]
+      responses:
+        '200': {description: Список ошибок}
 
 components:
   schemas:
     PVZ:
       type: object
       properties:
-        pvz_id:
-          type: integer
-        address:
-          type: string
-        capacity_per_hour:
-          type: integer
-        region:
-          type: string
+        pvz_id: {type: integer}
+        address: {type: string}
+        capacity_per_hour: {type: integer}
+        region: {type: string}
